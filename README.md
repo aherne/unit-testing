@@ -7,8 +7,11 @@ Should unit testing logic abide to good principles of object oriented programmin
 - *creation*: automated creation of unit testing architecture (classes and methods) for target API under testing
 - *development*: user development of one or more unit tests for each class method created above
 - *execution*: automated execution of unit tests on above foundations
+- *configuration*: TBD later
 
-To use it, you only need to add this line to *require* in your **composer.json** file:
+## INSTALLATION & USAGE
+
+To install it, you only need to add following line to *require-dev* in your **composer.json** file:
 
 ```json
 "lucinda/unit-testing": "~1.0"
@@ -20,9 +23,23 @@ Then, run:
 composer update
 ```
 
-TBD: example files for CREATION and EXECUTION
+To create unit test classes and methods based on classes under testing, run a PHP file in your API root with following content:
 
-## CREATION
+```php
+require __DIR__ . '/vendor/autoload.php';
+new Lucinda\UnitTest\Creator(__DIR__);
+```
+
+To execute all unit tests and display them in unix console, run a PHP file in your API root with following content:
+
+```php
+require __DIR__ . '/vendor/autoload.php';
+new Lucinda\UnitTest\UnixConsoleRunner(__DIR__);
+```
+
+## DOCUMENTATION
+
+### CREATION
 
 To create unit test classes and methods automatically, you only need to use **Lucinda\UnitTest\Creator**. Its constructor has following signature:
 
@@ -45,7 +62,7 @@ This will mirror all classes in *src* folder into *tests* folder within */home/a
 
 If you added another method to any of original classes, you will only need to instance Lucinda\UnitTest\Creator again in order to add the new test methods.
 
-## DEVELOPMENT
+### DEVELOPMENT
 
 In order to be covered, each public method of class created MUST return either a single **Lucinda\UnitTest\Result** instance or a list of **Lucinda\UnitTest\Result** instances, depending on whether or not you desire one or more tests. Each test has a status (passed or not) and an optional message (containing details that identify test against siblings).
 
@@ -77,7 +94,7 @@ class BarTest { // mirrors class: Bar
 }
 ```
 
-### ASSERTIONS ON PRIMITIVE VALUES
+#### ASSERTIONS ON PRIMITIVE VALUES
 
 API allows you to make assertions on all PHP primitive data types:
 
@@ -97,7 +114,7 @@ $test = new Lucinda\UnitTest\Validator\Arrays($data);
 return $test->assertNotEmpty("is it empty");
 ```
 
-### ASSERTIONS ON SQL QUERIES RESULTS
+#### ASSERTIONS ON SQL QUERIES RESULTS
 
 Sometimes it is necessary to test information in database as well. For this you can use **Lucinda\UnitTest\Validator\SQL** class provided by API, which has three public methods:
 
@@ -119,7 +136,7 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
 
 Above mechanism allows you to develop MULTIPLE assertions on a single UnitTest\Validator\SQL instance, which in turn corresponds to a single SQL connection.
 
-### ASSERTIONS ON URL EXECUTION RESULTS
+#### ASSERTIONS ON URL EXECUTION RESULTS
 
 Sometimes it is necessary to test results of URL execution. For this you can use **Lucinda\UnitTest\Validator\URL** class provided by API, which has two public methods:
 
@@ -140,7 +157,7 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
 
 Above mechanism allows you to develop MULTIPLE assertions on same URL execution result via a single UnitTest\Validator\URL instance.
 
-## EXECUTION
+### EXECUTION
 
 Execution works in a way similar to CREATION only that its purpose is to FIND & RUN unit tests instead of CREATING them. All of this is done by Lucinda\UnitTest\Runner, which comes with two methods of interest:
 
