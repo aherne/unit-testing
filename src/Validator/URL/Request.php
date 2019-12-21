@@ -1,6 +1,8 @@
 <?php
 namespace Lucinda\UnitTest\Validator\URL;
 
+use Lucinda\UnitTest\Exception;
+
 /**
  * Encapsulates a request to an URL via cURL, supporting all HTTP verbs (GET, POST, PUT, DELETE)
  */
@@ -11,47 +13,41 @@ class Request
     /**
      * Generates a request to an URL based on criteria.
      *
-     * @param string $link URL to use in request.
-     * @param string $requestMethod HTTP request method to use when calling URL. Default: GET
-     * @param array $requestParameters List of parameters to send in request specific to request method. Default: none
-     * @param array $requestHeaders List of headers to send along with URL request.
-     * @throws RequestException If URL called is non-responsive.
+     * @param DataSource $dataSource
+     * @throws Exception If URL called is non-responsive.
      */
-    public function __construct(string $link, string $requestMethod="GET", array $requestParameters=[], array $requestHeaders=[])
+    public function __construct(DataSource $dataSource)
     {
-        $this->setResponse($link, $requestMethod, $requestHeaders, $requestParameters);
+        $this->setResponse($dataSource);
     }
 
     /**
      * Runs request and encapsulates results into a Response object
      *
-     * @param string $link URL to use in request.
-     * @param string $requestMethod HTTP request method to use when calling URL. Default: GET
-     * @param array $requestParameters List of parameters to send in request specific to request method. Default: none
-     * @param array $requestHeaders List of headers to send along with URL request.
-     * @throws RequestException If URL called is non-responsive.
+     * @param DataSource $dataSource
+     * @throws Exception If URL called is non-responsive.
      */
-    private function setResponse(string $link, string $requestMethod, array $requestParameters, array $requestHeaders): void
+    private function setResponse(DataSource $dataSource): void
     {
         $headers = [];
         $ch = curl_init();
-        if ($requestMethod=="GET") {
-            curl_setopt($ch, CURLOPT_URL, $link.($requestParameters?"?".http_build_query($requestParameters):""));
+        if ($dataSource->getRequestMethod()=="GET") {
+            curl_setopt($ch, CURLOPT_URL, $dataSource->getURL().($dataSource->getRequestParameters()?"?".http_build_query($dataSource->getRequestParameters()):""));
         } else {
-            curl_setopt($ch, CURLOPT_URL, $link);
-            if ($requestMethod=="POST") {
+            curl_setopt($ch, CURLOPT_URL, $dataSource->getURL());
+            if ($dataSource->getRequestMethod()=="POST") {
                 curl_setopt($ch, CURLOPT_POST, 1);
-            } elseif ($requestMethod=="PUT") {
+            } elseif ($dataSource->getRequestMethod()=="PUT") {
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-            } elseif ($requestMethod=="DELETE") {
+            } elseif ($dataSource->getRequestMethod()=="DELETE") {
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
             }
-            if ($requestParameters) {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($requestParameters));
+            if ($dataSource->getRequestParameters()) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($dataSource->getRequestParameters()));
             }
         }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $requestHeaders);
-        if (strpos($link, "https")===0) {
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $dataSource->getRequestHeaders());
+        if (strpos($dataSource->getURL(), "https")===0) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         }
@@ -81,7 +77,7 @@ class Request
         $error = curl_error($ch);
         try {
             if ($error) {
-                throw new RequestException($error);
+                throw new Exception($error);
             }
             $info = curl_getinfo($ch);
             $this->response = new Response($info["http_code"], $result, $headers);

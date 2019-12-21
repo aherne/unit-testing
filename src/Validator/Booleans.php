@@ -8,13 +8,37 @@ use Lucinda\UnitTest\Result;
  */
 class Booleans
 {
-    public static function assertTrue(bool $actual, string $message=""): Result
+    private $value;
+    
+    /**
+     * Constructs a boolean
+     *
+     * @param bool $value
+     */
+    public function __construct(bool $value)
     {
-        return new Result($actual?true:false, $message);
+        $this->value = $value;
     }
-
-    public static function assertFalse(bool $actual, string $message=""): Result
+    
+    /**
+     * Asserts if boolean is true
+     *
+     * @param string $message
+     * @return Result
+     */
+    public function assertTrue(string $message=""): Result
     {
-        return new Result($actual?false:true, $message);
+        return new Result($this->value?true:false, $message);
+    }
+    
+    /**
+     * Asserts if boolean is false
+     *
+     * @param string $message
+     * @return Result
+     */
+    public function assertFalse(string $message=""): Result
+    {
+        return new Result($this->value?false:true, $message);
     }
 }

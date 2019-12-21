@@ -8,33 +8,87 @@ use Lucinda\UnitTest\Result;
  */
 class Integers
 {
-    public static function assertEquals(int $expected, int $actual, string $message=""): Result
+    private $value;
+    
+    /**
+     * Constructs a integer
+     *
+     * @param int $value
+     */
+    public function __construct(int $value)
     {
-        return new Result($expected==$actual, $message);
+        $this->value = $value;
     }
-
-    public static function assertDifferent(int $expected, int $actual, string $message=""): Result
+    
+    /**
+     * Asserts if integer equals one expected
+     *
+     * @param int $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertEquals(int $expected, string $message=""): Result
     {
-        return new Result($expected!=$actual, $message);
+        return new Result($expected==$this->value, $message);
     }
-
-    public static function assertGreater(int $expected, int $actual, string $message=""): Result
+    
+    /**
+     * Asserts if integer is different from one expected
+     *
+     * @param int $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertDifferent(int $expected, string $message=""): Result
     {
-        return new Result($expected>$actual, $message);
+        return new Result($expected!=$this->value, $message);
     }
-
-    public static function assertGreaterEquals(int $expected, int $actual, string $message=""): Result
+    
+    /**
+     * Asserts if integer is greater than one expected
+     *
+     * @param integer $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertGreater(int $expected, string $message=""): Result
     {
-        return new Result($expected>=$actual, $message);
+        return new Result($expected>$this->value, $message);
     }
-
-    public static function assertSmaller(int $expected, int $actual, string $message=""): Result
+    
+    /**
+     * Asserts if integer is greater or equals one expected
+     *
+     * @param integer $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertGreaterEquals(int $expected, string $message=""): Result
     {
-        return new Result($expected<$actual, $message);
+        return new Result($expected>=$this->value, $message);
     }
-
-    public static function assertSmallerEquals(int $expected, int $actual, string $message=""): Result
+    
+    /**
+     * Asserts if integer is smaller than one expected
+     *
+     * @param integer $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertSmaller(int $expected, string $message=""): Result
     {
-        return new Result($expected<=$actual, $message);
+        return new Result($expected<$this->value, $message);
+    }
+    
+    /**
+     * Asserts if integer is smaller or equals one expected
+     *
+     * @param integer $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertSmallerEquals(int $expected, string $message=""): Result
+    {
+        return new Result($expected<=$this->value, $message);
     }
 }

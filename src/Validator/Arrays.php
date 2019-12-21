@@ -8,48 +8,157 @@ use Lucinda\UnitTest\Result;
  */
 class Arrays
 {
-    public static function assertEmpty(array $actual, string $message=""): Result
+    private $value;
+    
+    /**
+     * Constructs an array
+     *
+     * @param array $value
+     */
+    public function __construct(array $value)
     {
-        return new Result((empty($actual)?true:false), $message);
+        $this->value = $value;
+    }
+    
+    /**
+     * Asserts if array is empty
+     *
+     * @param string $message
+     * @return Result
+     */
+    public function assertEmpty(string $message=""): Result
+    {
+        return new Result((empty($this->value)?true:false), $message);
+    }
+    
+    /**
+     * Asserts if array is not empty
+     *
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotEmpty(string $message=""): Result
+    {
+        return new Result((!empty($this->value)?true:false), $message);
+    }
+    
+    /**
+     * Asserts if array equals one expected
+     *
+     * @param array $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertEquals(array $expected, string $message=""): Result
+    {
+        return new Result($expected==$this->value, $message);
+    }
+    
+    /**
+     * Asserts if array does not equal one expected
+     *
+     * @param array $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotEquals(array $expected, string $message=""): Result
+    {
+        return new Result($expected!=$this->value, $message);
+    }
+    
+    /**
+     * Asserts if array is identical with one expected
+     *
+     * @param array $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertIdentical(array $expected, string $message=""): Result
+    {
+        return new Result($expected===$this->value, $message);
+    }
+    
+    /**
+     * Asserts if array is not identical with one expected
+     *
+     * @param array $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotIdentical(array $expected, string $message=""): Result
+    {
+        return new Result($expected!==$this->value, $message);
     }
 
-    public static function assertNotEmpty(array $actual, string $message=""): Result
+    /**
+     * Asserts if array contains key
+     *
+     * @param mixed $key
+     * @param string $message
+     * @return Result
+     */
+    public function assertContainsKey($key, string $message=""): Result
     {
-        return new Result((!empty($actual)?true:false), $message);
+        return new Result(isset($this->value[$key]), $message);
+    }
+    
+    /**
+     * Asserts if array does not contain key
+     *
+     * @param mixed $key
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotContainsKey($key, string $message=""): Result
+    {
+        return new Result(!isset($this->value[$key]), $message);
+    }
+    
+    /**
+     * Asserts if array contains value
+     *
+     * @param mixed $value
+     * @param string $message
+     * @return Result
+     */
+    public function assertContainsValue($value, string $message=""): Result
+    {
+        return new Result(in_array($value, $this->value), $message);
+    }
+    
+    /**
+     * Asserts if array does not contain value
+     *
+     * @param mixed $value
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotContainsValue($value, string $message=""): Result
+    {
+        return new Result(!in_array($value, $this->value), $message);
     }
 
-    public static function assertEquals(array $expected, array $actual, string $message=""): Result
+    /**
+     * Asserts if array is of expected size
+     *
+     * @param int $count
+     * @param string $message
+     * @return Result
+     */
+    public function assertSize(int $count, string $message=""): Result
     {
-        return new Result($expected==$actual, $message);
+        return new Result(sizeof($this->value)==$count, $message);
     }
-
-    public static function assertNotEquals(array $expected, array $actual, string $message=""): Result
+    
+    /**
+     * Asserts if array is not of expected size
+     *
+     * @param int $count
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotSize(int $count, string $message=""): Result
     {
-        return new Result($expected!=$actual, $message);
-    }
-
-    public static function assertContainsKey(array $array, $key, string $message=""): Result
-    {
-        return new Result(isset($array[$key]), $message);
-    }
-
-    public static function assertNotContainsKey(array $array, $key, string $message=""): Result
-    {
-        return new Result(!isset($array[$key]), $message);
-    }
-
-    public static function assertContainsValue(array $array, $value, string $message=""): Result
-    {
-        return new Result(in_array($value, $array), $message);
-    }
-
-    public static function assertNotContainsValue(array $array, $value, string $message=""): Result
-    {
-        return new Result(!in_array($value, $array), $message);
-    }
-
-    public static function assertSize(array $array, int $count, string $message=""): Result
-    {
-        return new Result(sizeof($array)==$count, $message);
+        return new Result(sizeof($this->value)!=$count, $message);
     }
 }

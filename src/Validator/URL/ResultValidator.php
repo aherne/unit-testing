@@ -11,7 +11,7 @@ interface ResultValidator
     /**
      * Validates results of URL execution into a Result object
      *
-     * @param \Lucinda\SQL\StatementResults $statementResults
+     * @param Response $response
      * @return Result
      */
     public function validate(Response $response): Result;

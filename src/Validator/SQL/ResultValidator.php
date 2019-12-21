@@ -11,8 +11,8 @@ interface ResultValidator
     /**
      * Validates results of an SQL query execution into a Result object
      *
-     * @param \Lucinda\SQL\StatementResults $statementResults
+     * @param \PDOStatement $statementResults
      * @return Result
      */
-    public function validate(\Lucinda\SQL\StatementResults $statementResults): Result;
+    public function validate(\PDOStatement $statementResults): Result;
 }

@@ -2,19 +2,50 @@
 namespace Lucinda\UnitTest\Validator;
 
 use Lucinda\UnitTest\Result;
+use Lucinda\UnitTest\Exception;
 
 /**
  * Series of tests useful to validate object values
  */
 class Objects
 {
-    public static function assertInstanceOf($expected, $actual, string $message=""): Result
+    private $value;
+    
+    /**
+     * Constructs an object
+     *
+     * @param object $value
+     * @throws Exception
+     */
+    public function __construct($value)
     {
-        return new Result($actual instanceof $expected, $message);
+        if (!is_object($value)) {
+            throw new Exception("Value is not an object!");
+        }
+        $this->value = $value;
     }
-
-    public static function assertNotInstanceOf($expected, $actual, string $message=""): Result
+    
+    /**
+     * Checks if object is of expected instance
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertInstanceOf(string $expected, string $message=""): Result
     {
-        return new Result(!($actual instanceof $expected), $message);
+        return new Result($this->value instanceof $expected, $message);
+    }
+    
+    /**
+     * Checks if object is not of expected instance
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotInstanceOf(string $expected, string $message=""): Result
+    {
+        return new Result(!($this->value instanceof $expected), $message);
     }
 }

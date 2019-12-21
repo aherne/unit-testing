@@ -8,48 +8,157 @@ use Lucinda\UnitTest\Result;
  */
 class Strings
 {
-    public static function assertEmpty(string $actual, string $message=""): Result
+    private $value;
+    
+    /**
+     * Constructs a string
+     *
+     * @param string $value
+     */
+    public function __construct(string $value)
     {
-        return new Result(($actual?false:true), $message);
+        $this->value = $value;
+    }
+    
+    /**
+     * Asserts if string is empty
+     *
+     * @param string $message
+     * @return Result
+     */
+    public function assertEmpty(string $message=""): Result
+    {
+        return new Result(($this->value?false:true), $message);
     }
 
-    public static function assertNotEmpty(string $actual, string $message=""): Result
+    /**
+     * Asserts if string is not empty
+     *
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotEmpty(string $message=""): Result
     {
-        return new Result(($actual?true:false), $message);
+        return new Result(($this->value?true:false), $message);
     }
 
-    public static function assertEquals(string $expected, string $actual, string $message=""): Result
+    /**
+     * Asserts if string equals expected
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertEquals(string $expected, string $message=""): Result
     {
-        return new Result($expected==$actual, $message);
+        return new Result($expected==$this->value, $message);
     }
 
-    public static function assertDifferent(string $expected, string $actual, string $message=""): Result
+    /**
+     * Asserts if string is different from expected
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertDifferent(string $expected, string $message=""): Result
     {
-        return new Result($expected!=$actual, $message);
+        return new Result($expected!=$this->value, $message);
     }
 
-    public static function assertIdentical(string $expected, string $actual, string $message=""): Result
+    /**
+     * Asserts if string equals expected in case-insensitive mode
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertEqualsIgnoreCase(string $expected, string $message=""): Result
     {
-        return new Result($expected===$actual, $message);
+        return new Result(strtolower($expected)==strtolower($this->value), $message);
     }
-
-    public static function assertNotIdentical(string $expected, string $actual, string $message=""): Result
+    
+    /**
+     * Asserts if string is different from expected in case-insensitive mode
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertDifferentIgnoreCase(string $expected, string $message=""): Result
     {
-        return new Result($expected!==$actual, $message);
+        return new Result(strtolower($expected)!=strtolower($this->value), $message);
     }
-
-    public static function assertEqualsIgnoreCase(string $expected, string $actual, string $message=""): Result
+    
+    /**
+     * Asserts if string contains expected
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertContains(string $expected, string $message=""): Result
     {
-        return new Result(strtolower($expected)==strtolower($actual), $message);
+        return new Result(strpos($this->value, $expected)!==false, $message);
     }
-
-    public static function assertDifferentIgnoreCase(string $expected, string $actual, string $message=""): Result
+    
+    /**
+     * Asserts if string doesn't contain expected
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotContains(string $expected, string $message=""): Result
     {
-        return new Result(strtolower($expected)!=strtolower($actual), $message);
+        return new Result(strpos($this->value, $expected)===false, $message);
     }
-
-    public static function assertSize(string $string, int $count, string $message=""): Result
+    
+    /**
+     * Asserts if string contains expected in case-insensitive mode
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertContainsIgnoreCase(string $expected, string $message=""): Result
     {
-        return new Result(sizeof($string)==$count, $message);
+        return new Result(stripos($this->value, $expected)!==false, $message);
+    }
+    
+    /**
+     * Asserts if string doesn't contain expected in case-insensitive mode
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotContainsIgnoreCase(string $expected, string $message=""): Result
+    {
+        return new Result(stripos($this->value, $expected)===false, $message);
+    }
+    
+    /**
+     * Asserts if string is of expected size
+     *
+     * @param int $count
+     * @param string $message
+     * @return Result
+     */
+    public function assertSize(int $count, string $message=""): Result
+    {
+        return new Result(strlen($this->value)==$count, $message);
+    }
+    
+    /**
+     * Asserts if string is not of expected size
+     *
+     * @param int $count
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotSize(int $count, string $message=""): Result
+    {
+        return new Result(strlen($this->value)==$count, $message);
     }
 }
