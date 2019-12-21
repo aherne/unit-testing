@@ -13,7 +13,7 @@ class UnixConsoleRunner extends Runner
      *
      * @param UnitTest[] $results
      */
-    protected function display(array $results)
+    protected function display(array $results): void
     {
         foreach ($results as $unitTest) {
             echo $unitTest->className."\t".$unitTest->methodName."\t".($unitTest->result->hasPassed()?"\e[1;37;44m passed \e[0m":"\e[1;37;41m failed \e[0m")."\t".$unitTest->result->getMessage()."\n";

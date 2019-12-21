@@ -8,11 +8,25 @@ Should unit testing logic abide to good principles of object oriented programmin
 - *development*: user development of one or more unit tests for each class method created above
 - *execution*: automated execution of unit tests on above foundations
 
+To use it, you only need to add this line to *require* in your **composer.json** file:
+
+```json
+"lucinda/unit-testing": "~1.0"
+```
+
+Then, run:
+
+```bash
+composer update
+```
+
+TBD: example files for CREATION and EXECUTION
+
 ## CREATION
 
-To create unit test classes and methods, you only need to use **Lucinda\UnitTest\Creator**. Its constructor has following signature:
+To create unit test classes and methods automatically, you only need to use **Lucinda\UnitTest\Creator**. Its constructor has following signature:
 
-- *public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")*
+- *public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")*: performs creation logic
 
 Example:
 
@@ -20,7 +34,7 @@ Example:
 new Lucinda\UnitTest\Creator("/home/aherne/apis/php-servlets-api");
 ```
 
-This will mirror all classes in *$sourcesFolder* into *$testsFolder* according to following rules:
+This will mirror all classes in *src* folder into *tests* folder within */home/aherne/apis/php-servlets-api* according to following rules:
 
 - original folder structure is preserved, only that classes are renamed (see below)
 - original class and file name is preserved, only it has "Test" appended. So *MyClass* and *MyClass.php* is mirrored to *MyClassTest* and *MyClassTest.php*
@@ -29,6 +43,8 @@ This will mirror all classes in *$sourcesFolder* into *$testsFolder* according t
 - arguments and return type of source methods are ignored, so original *public function asd(string fgh): int* will be mirrored to *php public function asd()*
 - all created methods will have empty bodies
 
+If you added another method to any of original classes, you will only need to instance Lucinda\UnitTest\Creator again in order to add the new test methods.
+
 ## DEVELOPMENT
 
 In order to be covered, each public method of class created MUST return either a single **Lucinda\UnitTest\Result** instance or a list of **Lucinda\UnitTest\Result** instances, depending on whether or not you desire one or more tests. Each test has a status (passed or not) and an optional message (containing details that identify test against siblings).
@@ -36,20 +52,21 @@ In order to be covered, each public method of class created MUST return either a
 Example:
 
 ```php
-// here you must require composer autoload or class under testing itself
-class BarTest {
-    public function asd()
+namespace Test\Foo; // mirrors source namespace: Foo
+
+class BarTest { // mirrors class: Bar
+    public function asd(): Lucinda\UnitTest\Result // mirrors method: asd @ Bar 
     {
-        $object = new Foo\BAR(...);
+        $object = new \Foo\Bar(...);
         $data = $object->asd(...);
         // makes a single numeric assertion
         return (new Lucinda\UnitTest\Validator\Integers($data))->assertEquals(12);
     }
 
-    public function fgh()
+    public function fgh(): array // mirrors method: fgh @ Bar 
     {
         $results = [];
-        $object = new Foo\BAR(...);
+        $object = new \Foo\Bar(...);
         $data = $object->fgh(...);
         // makes multiple assertions on same value
         $test = new Lucinda\UnitTest\Validator\Arrays($data);
@@ -75,8 +92,10 @@ Each of these classes has a constructor in which a value of respective type is i
 
 Assertion example:
 
+```php
 $test = new Lucinda\UnitTest\Validator\Arrays($data);
 return $test->assertNotEmpty("is it empty");
+```
 
 ### ASSERTIONS ON SQL QUERIES RESULTS
 
@@ -89,7 +108,6 @@ Sometimes it is necessary to test information in database as well. For this you 
 Assertion example:
 
 ```php
-//instances and feeds $dataSource
 $test = new Lucinda\UnitTest\Validator\SQL($dataSource);
 $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lucinda\UnitTest\Validator\SQL\ResultValidator() {
     public function validate(\PDOStatement $statementResults): Result {
@@ -111,7 +129,6 @@ Sometimes it is necessary to test results of URL execution. For this you can use
 Assertion example:
 
 ```php
-// instances and feeds $dataSource
 $test = new Lucinda\UnitTest\Validator\URL(new Lucinda\UnitTest\Validator\URL\DataSource("https://www.google.com"));
 $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lucinda\UnitTest\Validator\SQL\ResultValidator() {
     public function validate(Lucinda\UnitTest\Validator\URL\Response $response): Result {
@@ -123,11 +140,29 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
 
 Above mechanism allows you to develop MULTIPLE assertions on same URL execution result via a single UnitTest\Validator\URL instance.
 
-### ASSERTIONS OF DAO CLASSES
-
-The most difficult part of any unit testing API is providing an ability to test logic of classes whose methods internally perform operations on database (sql or nosql). There are two basic ways of doing this:
-
-- using mocks, WITHOUT testing database itself
-- using transactions to restore database to its previous state after tests have ran 
-
 ## EXECUTION
+
+Execution works in a way similar to CREATION only that its purpose is to FIND & RUN unit tests instead of CREATING them. All of this is done by Lucinda\UnitTest\Runner, which comes with two methods of interest:
+
+- *public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")*: performs execution logic
+- *abstract protected function display(array $results): void*: displays results of unit tests (must be implemented by children)
+
+As once can notice above, because while there is a single logic for FIND & RUN, there is no single logic of displaying results. For that reason, class was made abstract and thus MUST be extended in order to display results:
+
+- on unix terminal: using **Lucinda\UnitTest\UnixConsoleRunner**
+- on windows command prompt: using **Lucinda\UnitTest\WindowsConsoleRunner**
+- as a JSON: using using **Lucinda\UnitTest\JsonRunner**
+
+Example:
+
+```php
+new Lucinda\UnitTest\UnixConsoleRunner("/home/aherne/apis/php-servlets-api");
+```
+
+Above will loop recursively through all classes in *src* folder, match them to a mirror in *tests* folder within */home/aherne/apis/php-servlets-api*,
+instance each found class, execute its public method and collect **Lucinda\UnitTest\Result** instances returned. The logic is as following:
+
+- if a class @ *src* has no mirror class @ *tests*, unit test is marked as failed for respective class and Lucinda\UnitTest\Creator must be ran!
+- if a class @ *src* has public methods not present in mirror class @ *tests*, unit test is marked as failed for respective method and Lucinda\UnitTest\Creator must be ran!
+- if any of methods of mirror class do not return a Lucinda\UnitTest\Result or a list of latter, unit test is marked as failed for respective method with message that method is not covered
+- results of unit tests are collected into a list of Lucinda\UnitTest\Result

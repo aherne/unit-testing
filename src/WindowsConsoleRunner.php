@@ -13,7 +13,7 @@ class WindowsConsoleRunner extends Runner
      *
      * @param UnitTest[] $results
      */
-    protected function display(array $results)
+    protected function display(array $results): void
     {
         foreach ($results as $unitTest) {
             echo $unitTest->className."\t".$unitTest->methodName."\t".($unitTest->result->hasPassed()?"passed":"failed")."\t".$unitTest->result->getMessage()."\r\n";

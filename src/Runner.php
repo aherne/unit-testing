@@ -106,5 +106,5 @@ abstract class Runner
      *
      * @param UnitTest[] $results
      */
-    abstract protected function display(array $results);
+    abstract protected function display(array $results): void;
 }
