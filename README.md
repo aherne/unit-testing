@@ -10,15 +10,24 @@ Should unit testing logic abide to good principles of object oriented programmin
 
 ## CREATION
 
-To create unit tests, you only need to open console and write following command:
+To create unit test classes and methods, you only need to use **Lucinda\UnitTest\Creator**. Its constructor has following signature:
 
-php Creator.php YOUR_SOURCES_FOLDER YOUR_TESTS_FOLDER
+- *public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")*
 
 Example:
 
-php Creator.php /home/aherne/apis/php-servlets-api/src /home/aherne/apis/php-servlets-api/tests
+```php
+new Lucinda\UnitTest\Creator("/home/aherne/apis/php-servlets-api");
+```
 
-This will loop through all classes in YOUR_SOURCES_FOLDER and mirror them in YOUR_TESTS_FOLDER using original folder structure and file names. Created classes will have identical name as original plus "Test" (but belong to no namespace) and contain all the public methods the original class (but without arguments). So for example if original class was Foo\Bar, found on disk as YOUR_SOURCES_FOLDER/Foo/Bar.php containing public methods asd(...) and fgh(...), then unit test file created will be YOUR_TESTS_FOLDER/Foo/BarTest.php, where we will have a BarTest class containing public methods asd() and fgh() where developers will need to cover original asd(...) and fgh(...).
+This will mirror all classes in *$sourcesFolder* into *$testsFolder* according to following rules:
+
+- original folder structure is mirrored, only that classes are renamed (see below)
+- original class and file name is preserved, only it has "Test" appended. So *MyClass* and *MyClass.php* is mirrored to *MyClassTest* and *MyClassTest.php*
+- original namespace is preserved, only it has "Test" namespace prepended. So *Foo\Bar* is mirrored to *Test\Foo\Bar*
+- only public methods of source classes are mirrored
+- arguments and return type of source methods are ignored, so original *public function asd(string fgh): int* will be mirrored to *php public function asd()*
+- all created methods will have empty bodies
 
 ## DEVELOPMENT
 
@@ -106,7 +115,7 @@ Assertion example:
 $test = new Lucinda\UnitTest\Validator\URL(new Lucinda\UnitTest\Validator\URL\DataSource("https://www.google.com"));
 $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lucinda\UnitTest\Validator\SQL\ResultValidator() {
     public function validate(Lucinda\UnitTest\Validator\URL\Response $response): Result {
-        $test = new Lucinda\UnitTest\Validator\String($response->getBody());
+        $test = new Lucinda\UnitTest\Validator\Strings($response->getBody());
         return $test->assertContains("google");
     }
 });

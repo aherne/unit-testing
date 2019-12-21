@@ -6,12 +6,12 @@ use Lucinda\UnitTest\Runner\ClassesFinder;
 use Lucinda\UnitTest\Runner\UnitTest;
 
 /**
- * Locates and runs unit tests then expects children to display results
+ * Locates and runs unit tests, expecting children to display results
  */
 abstract class Runner
 {
     /**
-     * UnitTestRunner constructor.
+     * UnitTest runner constructor.
      *
      * @param string $libraryFolder Folder on disk in which library is located at.
      * @param string $sourcesFolder Path to sources files folder relative to library folder.
@@ -29,57 +29,54 @@ abstract class Runner
     /**
      * Matches sources to tests and executes latter
      *
-     * @param array $sourceFiles List of source classes/files found along with adjacent info.
+     * @param ClassInfo[string] $sourceFiles List of source classes/files found along with adjacent info.
      * @param ClassInfo[string] $testFiles List of test classes/files found along with adjacent info.
-     * @return ClassInfo[string] List of unit test results by class and method name.
+     * @return UnitTest[] List of unit test results
      * @throws Exception
      */
-    private function execute(string $sourceFiles, string $testFiles): array
+    private function execute(array $sourceFiles, array $testFiles): array
     {
         $output = [];
         foreach ($sourceFiles as $infoSrc) {
             $srcClassName = $infoSrc->className;
             $testClassName = $srcClassName."Test";
-            $testClassNameWithNamespace = "\\".($infoSrc->namespace?$infoSrc->namespace."\\":"").$testClassName;
+            $srcNamespace = $infoSrc->namespace;
+            $testNamespace = ($srcNamespace?"\\Test\\".$srcNamespace:"");
+            $testClassNameWithNamespace = ($testNamespace?$testNamespace."\\":"").$testClassName;
             // check if class is covered
             if (!isset($testFiles[$testClassName])) {
                 $unitTest = new UnitTest();
                 $unitTest->className = $testClassNameWithNamespace;
                 $unitTest->result = new Result(false, "Class not covered by unit test");
                 $output[] = $unitTest;
-            } elseif ($infoSrc->namespace!=$testFiles[$testClassName]->namespace) {
+            } elseif ($testNamespace!=$testFiles[$testClassName]->namespace) {
                 $unitTest = new UnitTest();
                 $unitTest->className = $testClassNameWithNamespace;
                 $unitTest->result = new Result(false, "Unit test namespace doesn't match namespace of class");
                 $output[] = $unitTest;
             } else {
-                // load classes
-                require_once($infoSrc->fileName);
-                require_once($testFiles[$testClassName]->fileName);
-                // run tests
                 $testObject = new $testClassNameWithNamespace();
                 foreach ($infoSrc->methods as $method) {
-                    $testMethodName = $method."Test";
-                    if (!isset($testFiles[$testClassName]->methods[$testMethodName])) {
+                    if (!isset($testFiles[$testClassName]->methods[$method])) {
                         $unitTest = new UnitTest();
                         $unitTest->className = $testClassNameWithNamespace;
-                        $unitTest->methodName = $testMethodName;
+                        $unitTest->methodName = $method;
                         $unitTest->result = new Result(false, "Method not covered by unit test");
                         $output[] = $unitTest;
                     } else {
-                        $result = $testObject->{$testMethodName}();
+                        $result = $testObject->{$method}();
                         if (is_array($result) && !empty($result)) {
                             foreach ($result as $r) {
                                 if ($r instanceof Result) {
                                     $unitTest = new UnitTest();
                                     $unitTest->className = $testClassNameWithNamespace;
-                                    $unitTest->methodName = $testMethodName;
+                                    $unitTest->methodName = $method;
                                     $unitTest->result = $r;
                                     $output[] = $unitTest;
                                 } else {
                                     $unitTest = new UnitTest();
                                     $unitTest->className = $testClassNameWithNamespace;
-                                    $unitTest->methodName = $testMethodName;
+                                    $unitTest->methodName = $method;
                                     $unitTest->result = new Result(false, "Invalid unit test response");
                                     $output[] = $unitTest;
                                 }
@@ -87,13 +84,13 @@ abstract class Runner
                         } elseif ($result instanceof Result) {
                             $unitTest = new UnitTest();
                             $unitTest->className = $testClassNameWithNamespace;
-                            $unitTest->methodName = $testMethodName;
+                            $unitTest->methodName = $method;
                             $unitTest->result = $result;
                             $output[] = $unitTest;
                         } else {
                             $unitTest = new UnitTest();
                             $unitTest->className = $testClassNameWithNamespace;
-                            $unitTest->methodName = $testMethodName;
+                            $unitTest->methodName = $method;
                             $unitTest->result = new Result(false, "Invalid unit test response");
                             $output[] = $unitTest;
                         }
