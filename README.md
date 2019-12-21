@@ -8,7 +8,7 @@ Should unit testing logic abide to good principles of object oriented programmin
 - *development*: user development of one or more unit tests for each class method created above
 - *execution*: automated execution of unit tests on above foundations
 
-CREATION
+## CREATION
 
 To create unit tests, you only need to open console and write following command:
 
@@ -20,13 +20,14 @@ php Creator.php /home/aherne/apis/php-servlets-api/src /home/aherne/apis/php-ser
 
 This will loop through all classes in YOUR_SOURCES_FOLDER and mirror them in YOUR_TESTS_FOLDER using original folder structure and file names. Created classes will have identical name as original plus "Test" (but belong to no namespace) and contain all the public methods the original class (but without arguments). So for example if original class was Foo\Bar, found on disk as YOUR_SOURCES_FOLDER/Foo/Bar.php containing public methods asd(...) and fgh(...), then unit test file created will be YOUR_TESTS_FOLDER/Foo/BarTest.php, where we will have a BarTest class containing public methods asd() and fgh() where developers will need to cover original asd(...) and fgh(...).
 
-DEVELOPMENT
+## DEVELOPMENT
 
 In order to be covered, each public method of class created MUST return either a single Lucinda\UnitTest\Result instance or a list of Lucinda\UnitTest\Result instances, depending on whether or not you desire one or more tests. Each test has a status (passed or not) and an optional message (containing details that identify test against siblings).
 
 Example:
-# here you must require composer autoload or class under testing itself
 
+```php
+// here you must require composer autoload or class under testing itself
 class BarTest {
     public function asd()
     {
@@ -48,8 +49,9 @@ class BarTest {
         return $results;
     }
 }
+```
 
-ASSERTIONS ON PRIMITIVE VALUES
+### ASSERTIONS ON PRIMITIVE VALUES
 
 API allows you to make assertions on all PHP primitive data types:
 
@@ -67,7 +69,7 @@ Assertion example:
 $test = new Lucinda\UnitTest\Validator\Arrays($data);
 return $test->assertNotEmpty("is it empty");
 
-ASSERTIONS ON SQL QUERIES RESULTS
+### ASSERTIONS ON SQL QUERIES RESULTS
 
 Sometimes it is necessary to test information in database as well. For this you can use Lucinda\UnitTest\Validator\SQL class provided by API, which has three public methods:
 
@@ -77,7 +79,8 @@ Sometimes it is necessary to test information in database as well. For this you 
 
 Assertion example:
 
-# instances and feeds $dataSource
+```php
+//instances and feeds $dataSource
 $test = new Lucinda\UnitTest\Validator\SQL($dataSource);
 $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lucinda\UnitTest\Validator\SQL\ResultValidator() {
     public function validate(\PDOStatement $statementResults): Result {
@@ -85,10 +88,11 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
         return $test->assertEquals(8);
     }
 });
+```
 
 Above mechanism allows you to develop MULTIPLE assertions on a single UnitTest\Validator\SQL instance, which in turn corresponds to a single SQL connection.
 
-ASSERTIONS ON URL EXECUTION RESULTS
+### ASSERTIONS ON URL EXECUTION RESULTS
 
 Sometimes it is necessary to test results of URL execution. For this you can use Lucinda\UnitTest\Validator\URL class provided by API, which has two public methods:
 
@@ -97,7 +101,8 @@ Sometimes it is necessary to test results of URL execution. For this you can use
 
 Assertion example:
 
-# instances and feeds $dataSource
+```php
+// instances and feeds $dataSource
 $test = new Lucinda\UnitTest\Validator\URL(new Lucinda\UnitTest\Validator\URL\DataSource("https://www.google.com"));
 $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lucinda\UnitTest\Validator\SQL\ResultValidator() {
     public function validate(Lucinda\UnitTest\Validator\URL\Response $response): Result {
@@ -105,14 +110,15 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
         return $test->assertContains("google");
     }
 });
+```
 
 Above mechanism allows you to develop MULTIPLE assertions on same URL execution result via a single UnitTest\Validator\URL instance.
 
-ASSERTIONS OF DAO CLASSES
+### ASSERTIONS OF DAO CLASSES
 
 The most difficult part of any unit testing API is providing an ability to test logic of classes whose methods internally perform operations on database (sql or nosql). There are two basic ways of doing this:
 
 - using mocks, WITHOUT testing database itself
 - using transactions to restore database to its previous state after tests have ran 
 
-EXECUTION
+## EXECUTION
