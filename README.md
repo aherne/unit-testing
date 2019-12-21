@@ -7,7 +7,7 @@ Should unit testing logic abide to good principles of object oriented programmin
 - *creation*: automated creation of unit testing architecture (classes and methods) for target API under testing
 - *development*: user development of one or more unit tests for each class method created above
 - *execution*: automated execution of unit tests on above foundations
-- *configuration*: TBD later
+- *configuration*: (optional) sets up sql/nosql connection and credentials useful when you want to develop unit tests that use databases
 
 ## INSTALLATION & USAGE
 
@@ -36,6 +36,8 @@ To execute all unit tests and display them in unix console, run a PHP file in yo
 require __DIR__ . '/vendor/autoload.php';
 new Lucinda\UnitTest\UnixConsoleRunner(__DIR__);
 ```
+
+Both of above assume you are using standard *src* and *tests* folders in API root. If not, check complete constructors signature in documentation below.
 
 ## DOCUMENTATION
 
@@ -183,3 +185,22 @@ instance each found class, execute its public method and collect **Lucinda\UnitT
 - if a class @ *src* has public methods not present in mirror class @ *tests*, unit test is marked as failed for respective method and Lucinda\UnitTest\Creator must be ran!
 - if any of methods of mirror class do not return a Lucinda\UnitTest\Result or a list of latter, unit test is marked as failed for respective method with message that method is not covered
 - results of unit tests are collected into a list of Lucinda\UnitTest\Result
+
+## CONFIGURATION
+
+This is an optional feature required only for assertions involving databases. Similar to PHPUnit, it is done via an XML file with following structure:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xml>
+<xml>
+  <servers>
+    <sql>
+      <{environment}>
+        <server driver="{DRIVER}" host="{HOSTNAME}" port="{PORT}" username="{USERNAME}" password="{PASSWORD}" schema="{SCHEMA}" charset="{CHARSET}"/>
+      </{environment}>
+      ...
+    </sql>
+  </servers>
+</xml>
+``` 
