@@ -149,7 +149,8 @@ return $test->assertNotEmpty("is it empty");
 Sometimes it is necessary to test information in database as well. For this you can use **Lucinda\UnitTest\Validator\SQL** class provided by API, which has three public methods:
 
 - *public static function setDataSource(Lucinda\UnitTest\Validator\SQL\DataSource $dataSource)*: sets information required in opening a connection later on (eg: driver, user and password)
-- *public function __construct()*: opens connection to SQL server using PDO based on information encapsulated by **Lucinda\UnitTest\Validator\SQL\DataSource**
+- *public static function getInstance()*: opens single connection to SQL server using PDO based on information encapsulated by **Lucinda\UnitTest\Validator\SQL\DataSource** then starts a transaction
+- *public function __destruct()*: rolls back transaction and closes connection to SQL server
 - *public function assertStatement(string $query, Lucinda\UnitTest\Validator\SQL\ResultValidator $validator): Result*: executes a SQL statement and asserts results by delegating to a **Lucinda\UnitTest\Validator\SQL\ResultValidator** instance implemented by developers
 - *public function assertPreparedStatement(string $query, array $boundParameters, Lucinda\UnitTest\Validator\SQL\ResultValidator $validator): Result*: executes a SQL prepared statement and asserts results by delegating to a **Lucinda\UnitTest\Validator\SQL\ResultValidator** instance implemented by developers
 

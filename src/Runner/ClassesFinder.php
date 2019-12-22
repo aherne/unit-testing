@@ -71,8 +71,14 @@ class ClassesFinder
         preg_match("/(\n\s*class\s*([a-zA-Z0-9]+))/", $content, $m2);
         $classInfo->className = (isset($m2[2])?$m2[2]:"");
         $m3 = array();
-        preg_match_all("/(\n\s*(public)?\s*function\s([_a-zA-Z0-9]+))/", $content, $m3);
-        $classInfo->methods = (isset($m3[3])?$m3[3]:[]);
+        preg_match_all("/(\n\s*public\s+function\s+([_a-zA-Z0-9]+))/", $content, $m3);
+        $classInfo->methods = (isset($m3[2])?$m3[2]:[]);
+        // strip constructor and destructor
+        foreach ($classInfo->methods as $i=>$method) {
+            if (in_array($method, ["__construct", "__destruct"])) {
+                unset($classInfo->methods[$i]);
+            }
+        }
     }
     
     /**

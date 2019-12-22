@@ -12,6 +12,8 @@ use Lucinda\UnitTest\Validator\SQL\DataSource;
 class SQL
 {
     private static $dataSource;
+    private static $instance;
+    
     private $PDO;
     
     /**
@@ -24,18 +26,32 @@ class SQL
         self::$dataSource = $dataSource;
     }
     
+    /**
+     * Singleton opening a single connection
+     * 
+     * @throws Exception
+     * @return \Lucinda\UnitTest\Validator\SQL
+     */
+    public static function getInstance()
+    {
+        if (!self::$dataSource) {
+            throw new Exception("Data source not configured!");
+        }
+        if (!self::$instance) {
+            self::$instance = new SQL();
+        }
+        return self::$instance;
+    }
+    
     
     /**
-     * Connects to database based on information in DataSource using PDO
+     * Connects to database based on information in DataSource using PDO then starts a transaction
      * 
      * @throws Exception
      */
-    public function __construct()
+    private function __construct()
     {
         $dataSource = self::$dataSource;
-        if (!$dataSource) {
-            throw new Exception("Data source not configured!");
-        }
         $settings = ":host=".$dataSource->getHost();
         if ($dataSource->getPort()) {
             $settings .= ";port=".$dataSource->getPort();
@@ -48,6 +64,7 @@ class SQL
         }
         $this->PDO = new \PDO($dataSource->getDriverName().$settings, $dataSource->getUserName(), $dataSource->getPassword(), $dataSource->getDriverOptions());
         $this->PDO->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->PDO->beginTransaction();
     }
 
     /**
@@ -82,5 +99,14 @@ class SQL
         } catch (\Exception $e) {
             $this->unitTestResult = new Result(false, $e->getMessage());
         }
+    }
+    
+    /**
+     * Automatically rolls back transaction and closes connection when script ends
+     */
+    public function __destruct()
+    {
+        $this->PDO->rollBack();
+        $this->PDO = null;
     }
 }
