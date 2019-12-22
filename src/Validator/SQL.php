@@ -1,6 +1,7 @@
 <?php
 namespace Lucinda\UnitTest\Validator;
 
+use Lucinda\UnitTest\Exception;
 use \Lucinda\UnitTest\Result;
 use \Lucinda\UnitTest\Validator\SQL\ResultValidator;
 use Lucinda\UnitTest\Validator\SQL\DataSource;
@@ -10,15 +11,31 @@ use Lucinda\UnitTest\Validator\SQL\DataSource;
  */
 class SQL
 {
+    private static $dataSource;
     private $PDO;
     
     /**
-     * Connects to database based on information in DataSource using PDO
-     *
+     * Sets data source to be used by SQL instances later on
+     * 
      * @param DataSource $dataSource
      */
-    public function __construct(DataSource $dataSource)
+    public static function setDataSource(DataSource $dataSource)
     {
+        self::$dataSource = $dataSource;
+    }
+    
+    
+    /**
+     * Connects to database based on information in DataSource using PDO
+     * 
+     * @throws Exception
+     */
+    public function __construct()
+    {
+        $dataSource = self::$dataSource;
+        if (!$dataSource) {
+            throw new Exception("Data source not configured!");
+        }
         $settings = ":host=".$dataSource->getHost();
         if ($dataSource->getPort()) {
             $settings .= ";port=".$dataSource->getPort();

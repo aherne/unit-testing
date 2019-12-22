@@ -27,17 +27,45 @@ To create unit test classes and methods based on classes under testing, run a PH
 
 ```php
 require __DIR__ . '/vendor/autoload.php';
-new Lucinda\UnitTest\Creator(__DIR__);
+try {
+	new Lucinda\UnitTest\Creator(__DIR__);
+} catch (Exception $e) {
+	// handle exceptions
+}
+
 ```
 
 To execute all unit tests and display them in unix console, run a PHP file in your API root with following content:
 
 ```php
 require __DIR__ . '/vendor/autoload.php';
-new Lucinda\UnitTest\UnixConsoleRunner(__DIR__);
+try {
+	new Lucinda\UnitTest\UnixConsoleRunner(__DIR__);
+} catch (Exception $e) {
+	// handle exceptions
+}
 ```
 
-Both of above assume you are using standard *src* and *tests* folders in API root. If not, check complete constructors signature in documentation below.
+Both of above assume you are using standard *src* and *tests* folders in API root. If not, check complete constructors signature in documentation below. 
+
+If you're planning to customize unit tests or make SQL assertions as well, change above code to:
+
+```php
+require __DIR__ . '/vendor/autoload.php';
+try {
+	new Lucinda\UnitTest\Configuration({XML_LOCATION}, {DEVELOPMENT_ENVIRONMENT});
+	new Lucinda\UnitTest\UnixConsoleRunner(__DIR__);
+} catch (Exception $e) {
+	// handle exceptions
+}
+```
+
+Where:
+
+- *XML_LOCATION*: relative or absolute location of XML file that configures unit tests
+- *DEVELOPMENT_ENVIRONMENT*: name of current development environment (eg: home, dev, live) that must reflect into a tag in XML above
+
+For more info into above, check CONFIGURATION section below!
 
 ## DOCUMENTATION
 
@@ -120,7 +148,8 @@ return $test->assertNotEmpty("is it empty");
 
 Sometimes it is necessary to test information in database as well. For this you can use **Lucinda\UnitTest\Validator\SQL** class provided by API, which has three public methods:
 
-- *public function __construct(Lucinda\UnitTest\Validator\SQL\DataSource $dataSource)*: opens connection to SQL server using PDO based on information encapsulated by **Lucinda\UnitTest\Validator\SQL\DataSource**
+- *public static function setDataSource(Lucinda\UnitTest\Validator\SQL\DataSource $dataSource)*: sets information required in opening a connection later on (eg: driver, user and password)
+- *public function __construct()*: opens connection to SQL server using PDO based on information encapsulated by **Lucinda\UnitTest\Validator\SQL\DataSource**
 - *public function assertStatement(string $query, Lucinda\UnitTest\Validator\SQL\ResultValidator $validator): Result*: executes a SQL statement and asserts results by delegating to a **Lucinda\UnitTest\Validator\SQL\ResultValidator** instance implemented by developers
 - *public function assertPreparedStatement(string $query, array $boundParameters, Lucinda\UnitTest\Validator\SQL\ResultValidator $validator): Result*: executes a SQL prepared statement and asserts results by delegating to a **Lucinda\UnitTest\Validator\SQL\ResultValidator** instance implemented by developers
 
@@ -188,7 +217,7 @@ instance each found class, execute its public method and collect **Lucinda\UnitT
 
 ## CONFIGURATION
 
-This is an optional feature required only for assertions involving databases. Similar to PHPUnit, it is done via an XML file with following structure:
+This is an optional feature required to configure unit testing (currently only ASSERTIONS ON SQL QUERIES RESULTS). Similar to PHPUnit, it is done via an XML file with following structure:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -196,11 +225,30 @@ This is an optional feature required only for assertions involving databases. Si
 <xml>
   <servers>
     <sql>
-      <{environment}>
+      <{ENVIRONMENT}>
         <server driver="{DRIVER}" host="{HOSTNAME}" port="{PORT}" username="{USERNAME}" password="{PASSWORD}" schema="{SCHEMA}" charset="{CHARSET}"/>
-      </{environment}>
+        ...
+      </{ENVIRONMENT}>
       ...
     </sql>
   </servers>
 </xml>
 ``` 
+
+Where:
+
+- *ENVIRONMENT*: development environment, value of ```php getenv("ENVIRONMENT") ```. Example: *live*
+- *DRIVER*: (mandatory) name of SQL vendor, as recognized by PDO. Example: *mysql*
+- *HOSTNAME*: (mandatory) current database server host name. Example: *127.0.0.1*
+- *PORT*: (optional) current database server port number. Example: *3306*
+- *USERNAME*: (mandatory) database server user name. Example: *root*
+- *PASSWORD*: (mandatory) database server use password. Example: *my-password*
+- *SCHEMA*: (optional) name of schema unit tests will run on. Example: *test_schema*
+- *CHARSET*: (optional) default character set to use in connection. Example: *utf8*
+
+Above file is parsed by **Lucinda\UnitTest\Configuration** class via its constructor:
+
+- *public function __construct(string $xmlFilePath, string $developmentEnvironment)*
+
+Above will locate &lt;server&gt; tag that matches current ENVIRONMENT, build a Lucinda\UnitTest\SQL\DataSource and injects it statically into Lucinda\UnitTest\SQL 
+in order to be used in connections later on.
