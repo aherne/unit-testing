@@ -65,30 +65,6 @@ class Strings
     {
         return new Result($expected!=$this->value, $message);
     }
-
-    /**
-     * Asserts if string equals expected in case-insensitive mode
-     *
-     * @param string $expected
-     * @param string $message
-     * @return Result
-     */
-    public function assertEqualsIgnoreCase(string $expected, string $message=""): Result
-    {
-        return new Result(strtolower($expected)==strtolower($this->value), $message);
-    }
-    
-    /**
-     * Asserts if string is different from expected in case-insensitive mode
-     *
-     * @param string $expected
-     * @param string $message
-     * @return Result
-     */
-    public function assertDifferentIgnoreCase(string $expected, string $message=""): Result
-    {
-        return new Result(strtolower($expected)!=strtolower($this->value), $message);
-    }
     
     /**
      * Asserts if string contains expected
@@ -115,30 +91,6 @@ class Strings
     }
     
     /**
-     * Asserts if string contains expected in case-insensitive mode
-     *
-     * @param string $expected
-     * @param string $message
-     * @return Result
-     */
-    public function assertContainsIgnoreCase(string $expected, string $message=""): Result
-    {
-        return new Result(stripos($this->value, $expected)!==false, $message);
-    }
-    
-    /**
-     * Asserts if string doesn't contain expected in case-insensitive mode
-     *
-     * @param string $expected
-     * @param string $message
-     * @return Result
-     */
-    public function assertNotContainsIgnoreCase(string $expected, string $message=""): Result
-    {
-        return new Result(stripos($this->value, $expected)===false, $message);
-    }
-    
-    /**
      * Asserts if string is of expected size
      *
      * @param int $count
@@ -159,6 +111,6 @@ class Strings
      */
     public function assertNotSize(int $count, string $message=""): Result
     {
-        return new Result(strlen($this->value)==$count, $message);
+        return new Result(strlen($this->value)!=$count, $message);
     }
 }

@@ -188,6 +188,18 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
 
 Above mechanism allows you to develop MULTIPLE assertions on same URL execution result via a single UnitTest\Validator\URL instance.
 
+#### ASSERTIONS ON FILES
+
+One can perform assertions on files by using **UnitTest\Validator\Files** class, which comes with following public methods:
+
+- *public function __construct(string $path)*
+- *public function assertExists(string $message=""): Result*: asserts if file exists
+- *public function assertNotExists(string $message=""): Result*: asserts if file not exists
+- *public function assertContains(string $expected, string $message=""): Result*: asserts if file contains expected string
+- *public function assertNotContains(string $expected, string $message=""): Result*: asserts if file doesn't contain expected string
+- *public function assertSize(int $count, string $message=""): Result*: assert if file is of expected size
+- *public function assertNotSize(int $count, string $message=""): Result*: assert if file is not of expected size
+
 ### EXECUTION
 
 Execution works in a way similar to CREATION only that its purpose is to FIND & RUN unit tests instead of CREATING them. All of this is done by Lucinda\UnitTest\Runner, which comes with two methods of interest:
