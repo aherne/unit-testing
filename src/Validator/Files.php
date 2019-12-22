@@ -87,4 +87,3 @@ class Files
         return new Result(filesize($this->value)!=$size, $message);
     }
 }
-

@@ -18,4 +18,3 @@ class JsonRunner extends Runner
         echo json_encode($results);
     }
 }
-

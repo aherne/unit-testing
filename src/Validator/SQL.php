@@ -18,7 +18,7 @@ class SQL
     
     /**
      * Sets data source to be used by SQL instances later on
-     * 
+     *
      * @param DataSource $dataSource
      */
     public static function setDataSource(DataSource $dataSource)
@@ -28,7 +28,7 @@ class SQL
     
     /**
      * Singleton opening a single connection
-     * 
+     *
      * @throws Exception
      * @return \Lucinda\UnitTest\Validator\SQL
      */
@@ -46,7 +46,7 @@ class SQL
     
     /**
      * Connects to database based on information in DataSource using PDO then starts a transaction
-     * 
+     *
      * @throws Exception
      */
     private function __construct()

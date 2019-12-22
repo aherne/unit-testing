@@ -13,7 +13,7 @@ class Configuration
     
     /**
      * Reads unit tests configuration based on XML file and development environment
-     * 
+     *
      * @param string $xmlFilePath
      * @param string $developmentEnvironment
      * @throws Exception
@@ -30,13 +30,12 @@ class Configuration
     
     /**
      * Detects SQL data source based on servers > sql > {ENVIRONMENT} > server tag.
-     * 
+     *
      * @param string $developmentEnvironment
      * @throws Exception
      */
     private function setSQLDataSource(string $developmentEnvironment): void
     {
-        
         $xml = $this->simpleXMLElement->servers->sql->{$developmentEnvironment}->server;
         if (empty($xml)) {
             throw new Exception("Tag servers/sql not configured for: ".$developmentEnvironment);

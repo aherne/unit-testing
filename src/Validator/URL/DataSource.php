@@ -53,4 +53,3 @@ class DataSource
         return $this->requestHeaders;
     }
 }
-

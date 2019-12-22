@@ -6,11 +6,13 @@ namespace Lucinda\UnitTest\Creator;
  */
 class TestClass
 {
-    private $testClassName, $testNamespace, $testFileLocation;
+    private $testClassName;
+    private $testNamespace;
+    private $testFileLocation;
     
     /**
      * Sets up class information
-     * 
+     *
      * @param string $testClassName
      * @param string $testNamespace
      * @param string $testFileLocation
@@ -24,7 +26,7 @@ class TestClass
     
     /**
      * Create an unit test class
-     * 
+     *
      * @param string[] $methods
      */
     public function create(array $methods): void
@@ -35,7 +37,7 @@ class TestClass
 class '.$this->testClassName.'
 {
 ';
-        foreach($methods as $method) {
+        foreach ($methods as $method) {
             $source .= '
     public function '.$method.'()
     {
@@ -74,4 +76,3 @@ class '.$this->testClassName.'
         file_put_contents($this->testFileLocation, $source);
     }
 }
-
