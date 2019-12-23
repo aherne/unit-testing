@@ -61,7 +61,7 @@ class Strings
      * @param string $message
      * @return Result
      */
-    public function assertDifferent(string $expected, string $message=""): Result
+    public function assertNotEquals(string $expected, string $message=""): Result
     {
         return new Result($expected!=$this->value, $message);
     }

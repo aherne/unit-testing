@@ -39,7 +39,7 @@ class Integers
      * @param string $message
      * @return Result
      */
-    public function assertDifferent(int $expected, string $message=""): Result
+    public function assertNotEquals(int $expected, string $message=""): Result
     {
         return new Result($expected!=$this->value, $message);
     }

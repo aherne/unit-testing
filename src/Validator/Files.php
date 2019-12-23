@@ -40,6 +40,30 @@ class Files
     }
     
     /**
+     * Asserts if file content equals expected string
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertEquals(string $expected, string $message=""): Result
+    {
+        return new Result(file_get_contents($this->path) == $expected, $message);
+    }
+    
+    /**
+     * Asserts if file content doesn't equal expected string
+     *
+     * @param string $expected
+     * @param string $message
+     * @return Result
+     */
+    public function assertNotEquals(string $expected, string $message=""): Result
+    {
+        return new Result(file_get_contents($this->path) != $expected, $message);
+    }
+    
+    /**
      * Asserts if file contains expected string
      *
      * @param string $expected

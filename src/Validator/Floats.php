@@ -39,7 +39,7 @@ class Floats
      * @param string $message
      * @return Result
      */
-    public function assertDifferent(float $expected, string $message=""): Result
+    public function assertNotEquals(float $expected, string $message=""): Result
     {
         return new Result($expected!=$this->value, $message);
     }
