@@ -16,18 +16,19 @@ class Creator
     /**
      * UnitTest creator constructor.
      *
-     * @param string $libraryFolder Folder on disk in which library is located at.
-     * @param string $sourcesFolder Path to sources files folder relative to library folder.
-     * @param string $testsFolder Path to unit tests folder relative to library folder.
+     * @param Configuration $configuration.
      * @throws Exception
      */
-    public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")
+    public function __construct(Configuration $configuration)
     {
-        $this->sourcesFolder = $libraryFolder."/".$sourcesFolder;
-        $this->testsFolder = $libraryFolder."/".$testsFolder;
-        $sourcesFinder = new ClassesFinder($this->sourcesFolder);
-        $testsFinder = new ClassesFinder($this->testsFolder);
-        $this->execute($sourcesFinder->getResults(), $testsFinder->getResults());
+        $apis = $configuration->getAPIs();
+        foreach ($apis as $api) {
+            $this->sourcesFolder = $api->getSourcesPath();
+            $this->testsFolder = $api->getTestsPath();
+            $sourcesFinder = new ClassesFinder($this->sourcesFolder);
+            $testsFinder = new ClassesFinder($this->testsFolder);
+            $this->execute($sourcesFinder->getResults(), $testsFinder->getResults());
+        }   
     }
     
     /**
@@ -37,24 +38,28 @@ class Creator
      * @param ClassInfo[string] $testFiles List of test classes/files found along with adjacent info.
      * @throws Exception
      */
-    private function execute(string $sourceFiles, string $testFiles): void
+    private function execute(array $sourceFiles, array $testFiles): void
     {
         foreach ($sourceFiles as $infoSrc) {
+            if ($infoSrc->isAbstract || $infoSrc->isInterface) {
+                continue;
+            }
             $srcClassName = $infoSrc->className;
             $testClassName = $srcClassName."Test";
             $srcNamespace = $infoSrc->namespace;
-            $testNamespace = ($srcNamespace?"\\Test\\".$srcNamespace:"");
-            $testFileLocation = str_replace([$this->sourcesFolder, ".php"], [$this->testsFolder, "Test.php"], $infoSrc->fileName);
+            $testNamespace = ($srcNamespace?"Test\\".$srcNamespace:"");
+            $testFileLocation = str_replace([$this->sourcesFolder, ".php"], [$this->testsFolder, "Test.php"], $infoSrc->filePath);
+            $testClassNameWithNamespace = ($testNamespace?$testNamespace."\\":"").$testClassName;
             // check if class is covered
-            if (!isset($testFiles[$testClassName])) {
+            if (!isset($testFiles[$testClassNameWithNamespace])) {
                 $test = new TestClass($testClassName, $testNamespace, $testFileLocation);
                 $test->create($infoSrc->methods);
-            } elseif ($testNamespace!=$testFiles[$testClassName]->namespace) {
+            } elseif ($testNamespace!=$testFiles[$testClassNameWithNamespace]->namespace) {
                 throw new Exception("Class ".$testClassName." should belong to namespace ".$testNamespace);
             } else {
                 $methods = [];
                 foreach ($infoSrc->methods as $method) {
-                    if (!isset($testFiles[$testClassName]->methods[$method])) {
+                    if (!isset($testFiles[$testClassNameWithNamespace]->methods[$method])) {
                         $methods[] = $method;
                     }
                 }

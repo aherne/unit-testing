@@ -48,6 +48,10 @@ class '.$this->testClassName.'
         $source .= '
 }
 ';
+        $directory = substr($this->testFileLocation, 0, strrpos($this->testFileLocation, "/"));
+        if (!file_exists($directory)) {
+            mkdir($directory, 0777, true);
+        }
         file_put_contents($this->testFileLocation, $source);
     }
     
@@ -70,7 +74,7 @@ class '.$this->testClassName.'
         }
         $source = file_get_contents($this->testFileLocation);
         $position = strrpos($source, "}");
-        $source = substr($source, $position-1).$additions.'
+        $source = substr($source, 0, $position-1).$additions.'
 }
 ';
         file_put_contents($this->testFileLocation, $source);

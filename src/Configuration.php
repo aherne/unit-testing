@@ -2,7 +2,7 @@
 namespace Lucinda\UnitTest;
 
 use Lucinda\UnitTest\Validator\SQL\DataSource;
-use Lucinda\UnitTest\Validator\SQL;
+use Lucinda\UnitTest\Configuration\UnitTestedAPI;
 
 /**
  * Detects unit tests configuration based on XML file and development environment
@@ -10,6 +10,9 @@ use Lucinda\UnitTest\Validator\SQL;
 class Configuration
 {
     private $simpleXMLElement;
+    
+    private $sqlDataSource;
+    private $apis = [];
     
     /**
      * Reads unit tests configuration based on XML file and development environment
@@ -25,11 +28,39 @@ class Configuration
         }
         $this->simpleXMLElement = simplexml_load_file($xmlFilePath);
         
+        $this->setAPIs();
         $this->setSQLDataSource($developmentEnvironment);
     }
     
     /**
-     * Detects SQL data source based on servers > sql > {ENVIRONMENT} > server tag.
+     * Detects API under testing by contents of 'unit_tests' tag
+     * 
+     * @throws Exception
+     */
+    private function setAPIs(): void
+    {
+        $tmp = (array) $this->simpleXMLElement->unit_tests;
+        if (empty($tmp["unit_test"])) {
+            throw new Exception("Tag empty or not defined in configuration XML: unit_tests");
+        }
+        $list = (is_array($tmp["unit_test"])?$tmp["unit_test"]:[$tmp["unit_test"]]);
+        foreach ($list as $unitTest) {            
+            $this->apis[] = new UnitTestedAPI($unitTest);
+        }
+    }
+    
+    /**
+     * Gets APIs under testing
+     * 
+     * @return UnitTestedAPI[]
+     */
+    public function getAPIs(): array
+    {
+        return $this->apis;
+    }
+    
+    /**
+     * Detects SQL data source based contents of 'sql' tag and development environment
      *
      * @param string $developmentEnvironment
      * @throws Exception
@@ -38,7 +69,7 @@ class Configuration
     {
         $xml = $this->simpleXMLElement->servers->sql->{$developmentEnvironment}->server;
         if (empty($xml)) {
-            throw new Exception("Tag servers/sql not configured for: ".$developmentEnvironment);
+            return;
         }
             
         $dataSource = new DataSource();
@@ -50,6 +81,17 @@ class Configuration
         $dataSource->setPassword((string) $xml["password"]);
         $dataSource->setSchema((string) $xml["schema"]);
         $dataSource->setCharset((string) $xml["charset"]);
-        SQL::setDataSource($dataSource);
+        $this->sqlDataSource = $dataSource;
+    }
+    
+    /**
+     * Gets SQL data source detected
+     * 
+     * @return DataSource
+     */
+    public function getSQLDataSource(): DataSource
+    {
+        return $this->sqlDataSource;
     }
 }
+

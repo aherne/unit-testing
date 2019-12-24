@@ -6,14 +6,14 @@ use Lucinda\UnitTest\Runner\UnitTest;
 /**
  * Runs unit tests programmatically and displays a JSON in response
  */
-class JsonRunner extends Runner
+class JsonRunner extends Controller
 {
     /**
      * Displays results of unit tests
      *
      * @param UnitTest[] $results
      */
-    protected function display(array $results): void
+    protected function handle(array $results): void
     {
         echo json_encode($results);
     }

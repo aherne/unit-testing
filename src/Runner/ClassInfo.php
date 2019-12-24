@@ -22,4 +22,29 @@ class ClassInfo
      * @var string
      */
     public $filePath;
+    
+    /**
+     * @var boolean
+     */
+    public $isFinal = false;
+    
+    /**
+     * @var boolean
+     */
+    public $isAbstract = false;
+    
+    /**
+     * @var boolean
+     */
+    public $isInterface = false;
+    
+    /**
+     * @var string
+     */
+    public $extends;
+    
+    /**
+     * @var string[]
+     */
+    public $implements = [];
 }

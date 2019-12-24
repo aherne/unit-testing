@@ -4,65 +4,73 @@ namespace Lucinda\UnitTest;
 use Lucinda\UnitTest\Runner\ClassInfo;
 use Lucinda\UnitTest\Runner\ClassesFinder;
 use Lucinda\UnitTest\Runner\UnitTest;
+use Lucinda\UnitTest\Validator\SQL;
 
 /**
  * Locates and runs unit tests, expecting children to display results
  */
-abstract class Runner
+class Runner
 {
+    private $results = [];
+    
     /**
      * UnitTest runner constructor.
      *
-     * @param string $libraryFolder Folder on disk in which library is located at.
-     * @param string $sourcesFolder Path to sources files folder relative to library folder.
-     * @param string $testsFolder Path to unit tests folder relative to library folder.
+     * @param Configuration $configuration
      * @throws Exception
      */
-    public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")
+    public function __construct(Configuration $configuration)
     {
-        $sourcesFinder = new ClassesFinder($libraryFolder."/".$sourcesFolder);
-        $testsFinder = new ClassesFinder($libraryFolder."/".$testsFolder);
-        $results = $this->execute($sourcesFinder->getResults(), $testsFinder->getResults());
-        $this->display($results);
+        if ($configuration->getSQLDataSource()) {
+            SQL::setDataSource($configuration->getSQLDataSource());
+        }
+        $apis = $configuration->getAPIs();
+        foreach ($apis as $api) {
+            $sourcesFinder = new ClassesFinder($api->getSourcesPath());
+            $testsFinder = new ClassesFinder($api->getTestsPath());
+            $results = $this->execute($sourcesFinder->getResults(), $testsFinder->getResults());
+            $this->setResults($results);
+        }        
     }
 
     /**
-     * Matches sources to tests and executes latter
+     * Matches sources to tests, executes latter and collects results
      *
      * @param ClassInfo[string] $sourceFiles List of source classes/files found along with adjacent info.
      * @param ClassInfo[string] $testFiles List of test classes/files found along with adjacent info.
-     * @return UnitTest[] List of unit test results
      * @throws Exception
      */
-    private function execute(array $sourceFiles, array $testFiles): array
+    private function setResults(array $sourceFiles, array $testFiles): array
     {
-        $output = [];
         foreach ($sourceFiles as $infoSrc) {
+            if ($infoSrc->isAbstract || $infoSrc->isInterface) {
+                continue;
+            }
             $srcClassName = $infoSrc->className;
             $testClassName = $srcClassName."Test";
             $srcNamespace = $infoSrc->namespace;
             $testNamespace = ($srcNamespace?"\\Test\\".$srcNamespace:"");
             $testClassNameWithNamespace = ($testNamespace?$testNamespace."\\":"").$testClassName;
             // check if class is covered
-            if (!isset($testFiles[$testClassName])) {
+            if (!isset($testFiles[$testClassNameWithNamespace])) {
                 $unitTest = new UnitTest();
                 $unitTest->className = $testClassNameWithNamespace;
                 $unitTest->result = new Result(false, "Class not covered by unit test");
-                $output[] = $unitTest;
-            } elseif ($testNamespace!=$testFiles[$testClassName]->namespace) {
+                $this->results[] = $unitTest;
+            } elseif ($testNamespace!=$testFiles[$testClassNameWithNamespace]->namespace) {
                 $unitTest = new UnitTest();
                 $unitTest->className = $testClassNameWithNamespace;
                 $unitTest->result = new Result(false, "Unit test namespace doesn't match namespace of class");
-                $output[] = $unitTest;
+                $this->results[] = $unitTest;
             } else {
                 $testObject = new $testClassNameWithNamespace();
                 foreach ($infoSrc->methods as $method) {
-                    if (!isset($testFiles[$testClassName]->methods[$method])) {
+                    if (!isset($testFiles[$testClassNameWithNamespace]->methods[$method])) {
                         $unitTest = new UnitTest();
                         $unitTest->className = $testClassNameWithNamespace;
                         $unitTest->methodName = $method;
                         $unitTest->result = new Result(false, "Method not covered by unit test");
-                        $output[] = $unitTest;
+                        $this->results[] = $unitTest;
                     } else {
                         $result = $testObject->{$method}();
                         if (is_array($result) && !empty($result)) {
@@ -72,13 +80,13 @@ abstract class Runner
                                     $unitTest->className = $testClassNameWithNamespace;
                                     $unitTest->methodName = $method;
                                     $unitTest->result = $r;
-                                    $output[] = $unitTest;
+                                    $this->results[] = $unitTest;
                                 } else {
                                     $unitTest = new UnitTest();
                                     $unitTest->className = $testClassNameWithNamespace;
                                     $unitTest->methodName = $method;
                                     $unitTest->result = new Result(false, "Invalid unit test response");
-                                    $output[] = $unitTest;
+                                    $this->results[] = $unitTest;
                                 }
                             }
                         } elseif ($result instanceof Result) {
@@ -86,25 +94,27 @@ abstract class Runner
                             $unitTest->className = $testClassNameWithNamespace;
                             $unitTest->methodName = $method;
                             $unitTest->result = $result;
-                            $output[] = $unitTest;
+                            $this->results[] = $unitTest;
                         } else {
                             $unitTest = new UnitTest();
                             $unitTest->className = $testClassNameWithNamespace;
                             $unitTest->methodName = $method;
                             $unitTest->result = new Result(false, "Invalid unit test response");
-                            $output[] = $unitTest;
+                            $this->results[] = $unitTest;
                         }
                     }
                 }
             }
         }
-        return $output;
     }
-
+    
     /**
-     * Displays results of unit tests
-     *
-     * @param UnitTest[] $results
+     * Gets results of unit tests
+     * 
+     * @return Result[]
      */
-    abstract protected function display(array $results): void;
+    public function getResults(): array
+    {
+        return $this->results;
+    }
 }
