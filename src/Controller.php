@@ -52,6 +52,6 @@ abstract class Controller
      * 
      * @param Result[] $results
      */
-    abstract protected function handle($results);
+    abstract protected function handle(array $results): void;
 }
 

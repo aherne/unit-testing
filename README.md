@@ -2,12 +2,17 @@
 
 This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing. Everything about that old API reminds us of bygone ages when developers built huge classes that do "everything", knew nothing about encapsulation except keyword "extends". That is the fundamental "architecture" principle of PHPUnit\Framework\TestCase: https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php, a monster that tries to do everything in ugliest way possible.
 
-Should unit testing logic abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API standing on three pylons:
+Should unit testing logic abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API standing on following pylons:
 
+- *configuration*: (optional) sets up sql/nosql connection and credentials useful when you want to develop unit tests that use databases
 - *creation*: automated creation of unit testing architecture (classes and methods) for target API under testing
 - *development*: user development of one or more unit tests for each class method created above
 - *execution*: automated execution of unit tests on above foundations
-- *configuration*: (optional) sets up sql/nosql connection and credentials useful when you want to develop unit tests that use databases
+- *display*: display of unit test results on console or as JSON
+
+## REQUIREMENTS
+
+This library requires every APIs under testing to be fully PSR4 compliant and coded in PHP7.1+!
 
 ## INSTALLATION & USAGE
 
@@ -23,38 +28,12 @@ Then, run:
 composer update
 ```
 
-To create unit test classes and methods based on classes under testing, run a PHP file in your API root with following content:
+To create (if not found already), execute unit tests and display them in console, run a PHP file in your API root with following content:
 
 ```php
 require __DIR__ . '/vendor/autoload.php';
 try {
-	new Lucinda\UnitTest\Creator(__DIR__);
-} catch (Exception $e) {
-	// handle exceptions
-}
-
-```
-
-To execute all unit tests and display them in unix console, run a PHP file in your API root with following content:
-
-```php
-require __DIR__ . '/vendor/autoload.php';
-try {
-	new Lucinda\UnitTest\UnixConsoleRunner(__DIR__);
-} catch (Exception $e) {
-	// handle exceptions
-}
-```
-
-Both of above assume you are using standard *src* and *tests* folders in API root. If not, check complete constructors signature in documentation below. 
-
-If you're planning to customize unit tests or make SQL assertions as well, change above code to:
-
-```php
-require __DIR__ . '/vendor/autoload.php';
-try {
-	new Lucinda\UnitTest\Configuration({XML_LOCATION}, {DEVELOPMENT_ENVIRONMENT});
-	new Lucinda\UnitTest\UnixConsoleRunner(__DIR__);
+	new Lucinda\UnitTest\ConsoleController({XML_LOCATION}, {DEVELOPMENT_ENVIRONMENT});
 } catch (Exception $e) {
 	// handle exceptions
 }
@@ -62,26 +41,77 @@ try {
 
 Where:
 
-- *XML_LOCATION*: relative or absolute location of XML file that configures unit tests
-- *DEVELOPMENT_ENVIRONMENT*: name of current development environment (eg: home, dev, live) that must reflect into a tag in XML above
+- *XML_LOCATION*: relative or absolute location of XML file that configures unit tests (see below about its syntax and structure)
+- *DEVELOPMENT_ENVIRONMENT*: name of current development environment (eg: home, dev, live) that must reflect into a child tag of server in XML above
 
 For more info into above, check CONFIGURATION section below!
 
 ## DOCUMENTATION
 
+### CONFIGURATION
+
+Similar to PHPUnit, configuration of unit tests is done via an XML file with following structure:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xml>
+<xml>
+    <unit_tests>
+        <unit_test>
+            <sources path="{PATH}" namespace="{NAMESPACE}"/>
+            <tests path="{PATH}" namespace="{NAMESPACE}"/>
+        </unit_test>
+        ...
+    </unit_tests>
+    <servers>
+        <sql>
+            <{ENVIRONMENT}>
+                <server driver="{DRIVER}" host="{HOSTNAME}" port="{PORT}" username="{USERNAME}" password="{PASSWORD}" schema="{SCHEMA}" charset="{CHARSET}"/>
+            </{ENVIRONMENT}>
+            ...
+        </sql>
+    </servers>
+</xml>
+```
+
+#### TAG: unit_tests
+
+This mandatory tag stores the suite of unit tests to be executed. Each API under testing is identified by a 'unit_test' tag which has following subtags:
+
+- **sources**: configures base path of sources folder (eg: *src*) and base API namespace (eg: *Lucinda\Logging\*) via namesake attributes
+- **tests**: configures base path of tests folder (eg: *tests*) and base API namespace (eg: *Test\Lucinda\Logging\*) via namesake attributes
+
+These settings will be used to autoload classes test/sources classes whenever used: like in composer's case, you are required to fully qualify namespaces and end them with a backslash.
+
+#### TAG: servers
+
+This optional tag stores connection settings for SQL servers that are going to be used in the unit tests. Connection settings are broken up by {ENVIRONMENT}: each of latter must have its name reflect into a child tag of *servers*, which in turn must have a *server* child tag where connection is configured for that environment.  
+
+Where:
+
+- *ENVIRONMENT*: development environment, value of ```php getenv("ENVIRONMENT") ```. Example: *live*
+- *DRIVER*: (mandatory) name of SQL vendor, as recognized by PDO. Example: *mysql*
+- *HOSTNAME*: (mandatory) current database server host name. Example: *127.0.0.1*
+- *PORT*: (optional) current database server port number. Example: *3306*
+- *USERNAME*: (mandatory) database server user name. Example: *root*
+- *PASSWORD*: (mandatory) database server use password. Example: *my-password*
+- *SCHEMA*: (optional) name of schema unit tests will run on. Example: *test_schema*
+- *CHARSET*: (optional) default character set to use in connection. Example: *utf8*
+
+Above file is parsed by **Lucinda\UnitTest\Configuration** class via its constructor:
+
+- *public function __construct(string $xmlFilePath, string $developmentEnvironment)*
+
+Above will locate &lt;server&gt; tag that matches current ENVIRONMENT, build a Lucinda\UnitTest\SQL\DataSource and injects it statically into Lucinda\UnitTest\SQL 
+in order to be used in connections later on.
+
 ### CREATION
 
 To create unit test classes and methods automatically, you only need to use **Lucinda\UnitTest\Creator**. Its constructor has following signature:
 
-- *public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")*: performs creation logic
+- *public function __construct(Configuration $configuration)*: creates test classes and methods based on their source equivalents
 
-Example:
-
-```php
-new Lucinda\UnitTest\Creator("/home/aherne/apis/php-servlets-api");
-```
-
-This will mirror all classes in *src* folder into *tests* folder within */home/aherne/apis/php-servlets-api* according to following rules:
+This will mirror all classes in *sources* folder into *tests* folder according to following rules:
 
 - original folder structure is preserved, only that classes are renamed (see below)
 - original class and file name is preserved, only it has "Test" appended. So *MyClass* and *MyClass.php* is mirrored to *MyClassTest* and *MyClassTest.php*
@@ -89,8 +119,6 @@ This will mirror all classes in *src* folder into *tests* folder within */home/a
 - only public methods of source classes are mirrored
 - arguments and return type of source methods are ignored, so original *public function asd(string fgh): int* will be mirrored to *php public function asd()*
 - all created methods will have empty bodies
-
-If you added another method to any of original classes, you will only need to instance Lucinda\UnitTest\Creator again in order to add the new test methods.
 
 ### DEVELOPMENT
 
@@ -191,7 +219,7 @@ Above mechanism allows you to develop MULTIPLE assertions on same URL execution 
 
 #### ASSERTIONS ON FILES
 
-One can perform assertions on files by using **UnitTest\Validator\Files** class, which comes with following public methods:
+One can perform assertions on files by using **Lucinda\UnitTest\Validator\Files** class, which comes with following public methods:
 
 - *public function __construct(string $path)*
 - *public function assertExists(string $message=""): Result*: asserts if file exists
@@ -203,65 +231,28 @@ One can perform assertions on files by using **UnitTest\Validator\Files** class,
 
 ### EXECUTION
 
-Execution works in a way similar to CREATION only that its purpose is to FIND & RUN unit tests instead of CREATING them. All of this is done by Lucinda\UnitTest\Runner, which comes with two methods of interest:
+Execution works in a way similar to CREATION only that its purpose is to FIND & RUN unit tests instead of CREATING them. All of this is done by **Lucinda\UnitTest\Runner**, which comes with two methods of interest:
 
-- *public function __construct(string $libraryFolder, string $sourcesFolder="src", string $testsFolder="tests")*: performs execution logic
-- *abstract protected function display(array $results): void*: displays results of unit tests (must be implemented by children)
+- *public function __construct(Configuration $configuration)*: performs execution logic
+- *public function getResults(): array*: gets list of unit test results, each encapsulated by a **Lucinda\UnitTest\Result** object
 
-As once can notice above, because while there is a single logic for FIND & RUN, there is no single logic of displaying results. For that reason, class was made abstract and thus MUST be extended in order to display results:
-
-- on unix terminal: using **Lucinda\UnitTest\UnixConsoleRunner**
-- on windows command prompt: using **Lucinda\UnitTest\WindowsConsoleRunner**
-- as a JSON: using using **Lucinda\UnitTest\JsonRunner**
-
-Example:
-
-```php
-new Lucinda\UnitTest\UnixConsoleRunner("/home/aherne/apis/php-servlets-api");
-```
-
-Above will loop recursively through all classes in *src* folder, match them to a mirror in *tests* folder within */home/aherne/apis/php-servlets-api*,
-instance each found class, execute its public method and collect **Lucinda\UnitTest\Result** instances returned. The logic is as following:
+Above will loop through all APIs under test, through through all classes in *sources* folder, match them to a mirror in *tests* folder. It will instance each found test class, execute its public methods and collect **Lucinda\UnitTest\Result** instances returned. The logic is as following:
 
 - if a class @ *src* has no mirror class @ *tests*, unit test is marked as failed for respective class and Lucinda\UnitTest\Creator must be ran!
 - if a class @ *src* has public methods not present in mirror class @ *tests*, unit test is marked as failed for respective method and Lucinda\UnitTest\Creator must be ran!
 - if any of methods of mirror class do not return a Lucinda\UnitTest\Result or a list of latter, unit test is marked as failed for respective method with message that method is not covered
 - results of unit tests are collected into a list of Lucinda\UnitTest\Result
 
-## CONFIGURATION
+### PUTTING EVERYTHING TOGETHER
 
-This is an optional feature required to configure unit testing (currently only ASSERTIONS ON SQL QUERIES RESULTS). Similar to PHPUnit, it is done via an XML file with following structure:
+Currently API hides complexity of creation/assertion/execution and results display through **Lucinda\UnitTest\Controller**. This abstract class comes with following methods of interest:
 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE xml>
-<xml>
-  <servers>
-    <sql>
-      <{ENVIRONMENT}>
-        <server driver="{DRIVER}" host="{HOSTNAME}" port="{PORT}" username="{USERNAME}" password="{PASSWORD}" schema="{SCHEMA}" charset="{CHARSET}"/>
-        ...
-      </{ENVIRONMENT}>
-      ...
-    </sql>
-  </servers>
-</xml>
-``` 
+- *public function __construct(string $xmlFilePath, string $developmentEnvironment)*: reads configuration xml based on development environment, creates missing unit tests and executes them all for each API referenced
+- *abstract protected function handle(array $results): void*: handles unit test results by storing or displaying them.
 
-Where:
+API comes already with two with two Lucinda\UnitTest\Controller extensions whose purpose is to display results of unit tests:
 
-- *ENVIRONMENT*: development environment, value of ```php getenv("ENVIRONMENT") ```. Example: *live*
-- *DRIVER*: (mandatory) name of SQL vendor, as recognized by PDO. Example: *mysql*
-- *HOSTNAME*: (mandatory) current database server host name. Example: *127.0.0.1*
-- *PORT*: (optional) current database server port number. Example: *3306*
-- *USERNAME*: (mandatory) database server user name. Example: *root*
-- *PASSWORD*: (mandatory) database server use password. Example: *my-password*
-- *SCHEMA*: (optional) name of schema unit tests will run on. Example: *test_schema*
-- *CHARSET*: (optional) default character set to use in connection. Example: *utf8*
+- **Lucinda\UnitTest\ConsoleController**: displays unit test results in a table on console
+- **Lucinda\UnitTest\JsonController**: displays unit test results as a json
 
-Above file is parsed by **Lucinda\UnitTest\Configuration** class via its constructor:
-
-- *public function __construct(string $xmlFilePath, string $developmentEnvironment)*
-
-Above will locate &lt;server&gt; tag that matches current ENVIRONMENT, build a Lucinda\UnitTest\SQL\DataSource and injects it statically into Lucinda\UnitTest\SQL 
-in order to be used in connections later on.
+Developers can build their own extensions that also save results somewhere...
