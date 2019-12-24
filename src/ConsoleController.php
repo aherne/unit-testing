@@ -6,7 +6,7 @@ use Lucinda\UnitTest\Runner\UnitTest;
 /**
  * Runs unit tests on unix console and displays results
  */
-class ConsoleRunner extends Controller
+class ConsoleController extends Controller
 {
     /**
      * Displays results of unit tests

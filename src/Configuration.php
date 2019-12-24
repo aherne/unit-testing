@@ -67,6 +67,9 @@ class Configuration
      */
     private function setSQLDataSource(string $developmentEnvironment): void
     {
+        if (empty($this->simpleXMLElement->servers->sql)) {
+            return;
+        }
         $xml = $this->simpleXMLElement->servers->sql->{$developmentEnvironment}->server;
         if (empty($xml)) {
             return;
@@ -89,7 +92,7 @@ class Configuration
      * 
      * @return DataSource
      */
-    public function getSQLDataSource(): DataSource
+    public function getSQLDataSource(): ?DataSource
     {
         return $this->sqlDataSource;
     }

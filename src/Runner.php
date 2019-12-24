@@ -28,8 +28,7 @@ class Runner
         foreach ($apis as $api) {
             $sourcesFinder = new ClassesFinder($api->getSourcesPath());
             $testsFinder = new ClassesFinder($api->getTestsPath());
-            $results = $this->execute($sourcesFinder->getResults(), $testsFinder->getResults());
-            $this->setResults($results);
+            $this->setResults($sourcesFinder->getResults(), $testsFinder->getResults());
         }        
     }
 
@@ -40,7 +39,7 @@ class Runner
      * @param ClassInfo[string] $testFiles List of test classes/files found along with adjacent info.
      * @throws Exception
      */
-    private function setResults(array $sourceFiles, array $testFiles): array
+    private function setResults(array $sourceFiles, array $testFiles): void
     {
         foreach ($sourceFiles as $infoSrc) {
             if ($infoSrc->isAbstract || $infoSrc->isInterface) {
@@ -49,7 +48,7 @@ class Runner
             $srcClassName = $infoSrc->className;
             $testClassName = $srcClassName."Test";
             $srcNamespace = $infoSrc->namespace;
-            $testNamespace = ($srcNamespace?"\\Test\\".$srcNamespace:"");
+            $testNamespace = ($srcNamespace?"Test\\".$srcNamespace:"");
             $testClassNameWithNamespace = ($testNamespace?$testNamespace."\\":"").$testClassName;
             // check if class is covered
             if (!isset($testFiles[$testClassNameWithNamespace])) {

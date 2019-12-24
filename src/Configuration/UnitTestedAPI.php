@@ -102,7 +102,7 @@ class UnitTestedAPI {
      */
     public function getSourcesPath(): string
     {
-        return $this->sources_folder;
+        return $this->sources_path;
     }
     
     /**
@@ -122,7 +122,7 @@ class UnitTestedAPI {
      */
     public function getTestsPath(): string
     {
-        return $this->tests_folder;
+        return $this->tests_path;
     }
     
     /**

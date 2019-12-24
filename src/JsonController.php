@@ -6,7 +6,7 @@ use Lucinda\UnitTest\Runner\UnitTest;
 /**
  * Runs unit tests programmatically and displays a JSON in response
  */
-class JsonRunner extends Controller
+class JsonController extends Controller
 {
     /**
      * Displays results of unit tests
