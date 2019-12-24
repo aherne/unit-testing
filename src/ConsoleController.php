@@ -18,7 +18,7 @@ class ConsoleController extends Controller
         // get max lengths
         $maxClassLength = 5;
         $maxMethodLength = 6;
-        $maxDescriptionLength = 10;
+        $maxDescriptionLength = 11;
         foreach ($results as $unitTest) {
             if (strlen($unitTest->className)>$maxClassLength) {
                 $maxClassLength = strlen($unitTest->className);
