@@ -126,7 +126,7 @@ class ClassesFinder
         $methods = $classInfo->methods;
         if ($classInfo->extends) {
             $className = $this->getNormalizedClassName($classInfo->extends);
-            if ($className) {
+            if ($className && isset($this->results[$className])) {
                 $newMethods = $this->getInheritedMethods($this->results[$className]);
                 foreach ($newMethods as $methodName) {
                     $methods[$methodName] = $methodName;
@@ -136,7 +136,7 @@ class ClassesFinder
         if ($classInfo->implements) {
             foreach ($classInfo->implements as $className) {
                 $className = $this->getNormalizedClassName($className);
-                if ($className) {
+                if ($className && isset($this->results[$className])) {
                     $newMethods = $this->getInheritedMethods($this->results[$className]);
                     foreach ($newMethods as $methodName) {
                         $methods[$methodName] = $methodName;
