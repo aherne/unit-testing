@@ -35,13 +35,16 @@ class ConsoleController extends Controller
         }
         
         // compile lines
+        $totals = ["passed"=>0, "failed"=>0];
         $emptyLineLength = $maxClassLength+4+$maxMethodLength+4+6+4+$maxDescriptionLength+4;
         echo str_repeat("-", $emptyLineLength)."\n";
         echo "| CLASS".str_repeat(" ", $maxClassLength-5)." | METHOD".str_repeat(" ", $maxMethodLength-6)." | STATUS | DESCRIPTION".str_repeat(" ", $maxDescriptionLength-11)." |\n";
         foreach ($results as $unitTest) {
             echo str_repeat("-", $emptyLineLength)."\n";
             echo "| ".$unitTest->className.str_repeat(" ", $maxClassLength-strlen($unitTest->className))." | ".$unitTest->methodName.str_repeat(" ", $maxMethodLength-strlen($unitTest->methodName))." | ".($unitTest->result->hasPassed()?"passed":"failed")." | ".$unitTest->result->getMessage().str_repeat(" ", $maxDescriptionLength-strlen($unitTest->result->getMessage()))." |\n";
+            $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
         }
         echo str_repeat("-", $emptyLineLength)."\n";
+        echo "Total: ".($totals["passed"]+$totals["failed"])." (".$totals["passed"]." passed, ".$totals["failed"]." failed)";
     }
 }
