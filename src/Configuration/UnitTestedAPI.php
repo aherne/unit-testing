@@ -6,7 +6,8 @@ use Lucinda\UnitTest\Exception;
 /**
  * Encapsulates information of an API under testing detected based on a 'unit_test' XML tag
  */
-class UnitTestedAPI {
+class UnitTestedAPI
+{
     const DEFAULT_SOURCES_PATH = "src";
     const DEFAULT_TESTS_PATH = "tests";
     
@@ -17,7 +18,7 @@ class UnitTestedAPI {
     
     /**
      * Performs detection process
-     * 
+     *
      * @param \SimpleXMLElement $unitTest
      * @throws Exception
      */
@@ -31,7 +32,7 @@ class UnitTestedAPI {
     
     /**
      * Detects source files base namespace based on attribute 'namespace' of 'sources' tag
-     * 
+     *
      * @param \SimpleXMLElement $unitTest
      * @throws Exception
      */
@@ -46,7 +47,7 @@ class UnitTestedAPI {
     
     /**
      * Gets paths to source files based on attribute 'path' of 'sources' tag
-     * 
+     *
      * @param \SimpleXMLElement $unitTest
      * @throws Exception
      */
@@ -79,7 +80,7 @@ class UnitTestedAPI {
     
     /**
      * Gets paths to test files based on attribute 'path' of 'tests' tag
-     * 
+     *
      * @param \SimpleXMLElement $unitTest
      * @throws Exception
      */
@@ -97,7 +98,7 @@ class UnitTestedAPI {
     
     /**
      * Gets base path to API sources folder.
-     * 
+     *
      * @return string
      */
     public function getSourcesPath(): string
@@ -107,7 +108,7 @@ class UnitTestedAPI {
     
     /**
      * Gets base namespace of API source classes
-     * 
+     *
      * @return string
      */
     public function getSourcesNamespace(): string
@@ -117,7 +118,7 @@ class UnitTestedAPI {
     
     /**
      * Gets base path to API tests folder.
-     * 
+     *
      * @return string
      */
     public function getTestsPath(): string

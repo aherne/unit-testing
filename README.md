@@ -154,8 +154,10 @@ Above mechanism allows you to develop MULTIPLE assertions on a single [Lucinda\U
 
 Sometimes it is necessary to test results of URL execution. For this you can use [Lucinda\UnitTest\Validator\URL](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL.php) class provided by API, which has two public methods:
 
-- *__construct([Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/DataSource.php) $dataSource)*: opens connection to an URL using Lucinda\UnitTest\Validator\URL\Request based on information encapsulated by **Lucinda\UnitTest\Validator\URL\DataSource** then collects results into a Lucinda\UnitTest\Validator\URL\Response instance.
-- *assert([Lucinda\UnitTest\Validator\URL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/ResultValidator.php) $validator)*: asserts results by delegating to a **Lucinda\UnitTest\Validator\URL\ResultValidator** instance implemented by developers
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| __construct | [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/DataSource.php) $dataSource | void | Opens connection to an URL using Lucinda\UnitTest\Validator\URL\Request based on information encapsulated by **Lucinda\UnitTest\Validator\URL\DataSource** then collects results into a Lucinda\UnitTest\Validator\URL\Response instance. |
+| assert | [Lucinda\UnitTest\Validator\URL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts results by delegating to a **Lucinda\UnitTest\Validator\URL\ResultValidator** instance implemented by developers |
 
 Assertion example:
 
