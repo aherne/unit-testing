@@ -2,7 +2,7 @@
 
 This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing. Everything about that old API reminds of bygone ages when developers built huge classes that do "everything", knew nothing about encapsulation except keyword "extends" (doubters should check [https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php](https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php) all PHPUnit tests must extend!). 
 
-Should unit testing logic abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API requiring you to only follow these steps:
+Should unit testing APIs abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API requiring you to only follow these steps:
 
 - [configuration](#configuration): setting up an XML file where unit testing is configured
 - [initialization](#initialization): automated creation of unit testing architecture (classes and methods) for target API under testing
