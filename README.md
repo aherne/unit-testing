@@ -131,10 +131,11 @@ Sometimes it is necessary to test information in database as well. For this you 
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
-| static getInstance | void | [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) | opens single connection to SQL server using PDO based on information encapsulated by [Lucinda\UnitTest\Validator\SQL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/DataSource.php) injected beforehand then starts a transaction |
+| static setDataSource | [Lucinda\UnitTest\Validator\SQL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/DataSource.php) | void | Sets a data source encapsulating settings to use in connection to server later on |
+| static getInstance | void | [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) | Opens single connection to SQL server using PDO based on data source injected beforehand then starts a transaction |
 | __destruct | void | void | rolls back transaction and closes connection to SQL server |
-| assertStatement | string $query, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | executes a SQL statement and asserts result by delegating to a [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) instance implemented by developers |
-| assertPreparedStatement | string $query, array $boundParameters, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | executes a SQL prepared statement and asserts result by delegating to a [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) instance implemented by developers |
+| assertStatement | string $query, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Executes a SQL statement and asserts result by delegating to validator received as argument |
+| assertPreparedStatement | string $query, array $boundParameters, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Executes a SQL prepared statement and asserts result by delegating to validator received as argument |
 
 Assertion example:
 
@@ -156,8 +157,8 @@ Sometimes it is necessary to test results of URL execution. For this you can use
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
-| __construct | [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/DataSource.php) $dataSource | void | Opens connection to an URL using Lucinda\UnitTest\Validator\URL\Request based on information encapsulated by **Lucinda\UnitTest\Validator\URL\DataSource** then collects results into a Lucinda\UnitTest\Validator\URL\Response instance. |
-| assert | [Lucinda\UnitTest\Validator\URL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts results by delegating to a **Lucinda\UnitTest\Validator\URL\ResultValidator** instance implemented by developers |
+| __construct | [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/DataSource.php) $dataSource | void | Opens connection to an URL using Lucinda\UnitTest\Validator\URL\Request based on information encapsulated by [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/DataSource.php) then collects results into a [Lucinda\UnitTest\Validator\URL\Response](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/Response.php) instance. |
+| assert | [Lucinda\UnitTest\Validator\URL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts response instance above by delegating to validator received as argument |
 
 Assertion example:
 
@@ -177,13 +178,15 @@ Above mechanism allows you to develop MULTIPLE assertions on same URL execution 
 
 One can perform assertions on files by using [Lucinda\UnitTest\Validator\Files](https://github.com/aherne/unit-testing/blob/master/src/Validator/Files.php) class, which comes with following public methods:
 
-- *__construct(string $path)*: records path to file under testing
-- *assertExists(string $message="")*: asserts if file exists
-- *assertNotExists(string $message="")*: asserts if file not exists
-- *assertContains(string $expected, string $message="")*: asserts if file contains expected string
-- *assertNotContains(string $expected, string $message="")*: asserts if file doesn't contain expected string
-- *assertSize(int $count, string $message="")*: assert if file is of expected size
-- *assertNotSize(int $count, string $message="")*: assert if file is not of expected size
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| __construct | string $path | void | Records path to file under testing |
+| assertExists | string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file exists |
+| assertNotExists | string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file not exists |
+| assertContains | string $expected, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file contains expected string |
+| assertNotContains | string $expected, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file doesn't contain expected string |
+| assertSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is of expected size |
+| assertNotSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is not of expected size |
 
 ## EXECUTION
 
@@ -196,8 +199,10 @@ By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit
 
 This abstract class comes with following methods of interest:
 
-- *__construct(string $xmlFilePath, string $developmentEnvironment)*: reads configuration xml based on development environment, creates missing unit tests and executes them all for each API referenced
-- *abstract protected function handle(array $results*: handles unit test results by storing or displaying them.
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| __construct | string $xmlFilePath, string $developmentEnvironment | void | Reads xml based on development environment, creates missing unit tests and executes them all for each API referenced |
+| abstract protected handle | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php)[] | void | Handles unit test results by storing or displaying them. |
 
 API comes already with two with two [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementations:
 
@@ -209,27 +214,22 @@ Developers can build their own extensions that also save results somewhere...
 
 ## INSTALLATION
 
-This library is fully PSR-4 compliant and only requires PHP7.1+ interpreter. For installation run:
+In folder where your API under testing resides, run this command in console:
 
 ```console
 composer require lucinda/unit-testing
 ```
 
-To create (if not found already), execute unit tests and display them in console, run a PHP file in your API root with following content:
+Then create a *unit-tests.xml* file holding configuration settings (see [configuration](#configuration) above) and a *test.php* file with following code:
 
 ```php
 require(__DIR__."/vendor/autoload.php");
 try {
-	new Lucinda\UnitTest\ConsoleController(XML_FILE_NAME, DEVELOPMENT_ENVIRONMENT);
+	new Lucinda\UnitTest\ConsoleController("unit-tests.xml", "local");
 } catch (Exception $e) {
 	// handle exceptions
 }
 ```
 
-Where:
-
-- *XML_FILE_NAME*: relative or absolute location of XML file that configures unit tests (see below about its syntax and structure)
-- *DEVELOPMENT_ENVIRONMENT*: name of current development environment (eg: home, dev, live) that must reflect into a child tag of server in XML above
-
-For more info into above, check CONFIGURATION section below!
+To see a live example of usage, check [unit tests](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests) for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)!
 
