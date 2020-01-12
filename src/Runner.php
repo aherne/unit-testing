@@ -29,7 +29,7 @@ class Runner
             $sourcesFinder = new ClassesFinder($api->getSourcesPath());
             $testsFinder = new ClassesFinder($api->getTestsPath());
             $this->setResults($sourcesFinder->getResults(), $testsFinder->getResults());
-        }        
+        }
     }
 
     /**
@@ -109,7 +109,7 @@ class Runner
     
     /**
      * Gets results of unit tests
-     * 
+     *
      * @return Result[]
      */
     public function getResults(): array

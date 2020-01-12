@@ -30,9 +30,9 @@ class SQL
      * Singleton opening a single connection
      *
      * @throws Exception
-     * @return \Lucinda\UnitTest\Validator\SQL
+     * @return SQL
      */
-    public static function getInstance()
+    public static function getInstance(): SQL
     {
         if (!self::$dataSource) {
             throw new Exception("Data source not configured!");

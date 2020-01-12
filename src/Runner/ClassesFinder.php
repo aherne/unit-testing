@@ -20,8 +20,9 @@ class ClassesFinder
     {
         $this->setResults($directory);
         foreach ($this->results as $classInfo) {
-            if (!$classInfo->isAbstract && !$classInfo->isInterface)
-            $classInfo->methods = $this->getInheritedMethods($classInfo);
+            if (!$classInfo->isAbstract && !$classInfo->isInterface) {
+                $classInfo->methods = $this->getInheritedMethods($classInfo);
+            }
         }
     }
     
@@ -72,7 +73,7 @@ class ClassesFinder
         $m5 = array();
         preg_match_all("/(\n[\s|\t]*use\s+([a-zA-Z0-9_\\\]+)\s+as\s+([a-zA-Z0-9_]+)\s*;)/", $content, $m5);
         $correspondences = [];
-        foreach($m5[1] as $i=>$value) {
+        foreach ($m5[1] as $i=>$value) {
             $correspondences[$m5[2][$i]] = $m5[1][$i];
         }
         
@@ -82,13 +83,13 @@ class ClassesFinder
         $classInfo->isAbstract = ($m2[3]?true:false);
         $classInfo->isInterface = $m2[4]=="interface";
         $classInfo->className = $m2[5];
-        $classInfo->extends = (!empty($m2[7])?$this->getFullClassName($m2[7], $correspondences,$classInfo->namespace):"");
+        $classInfo->extends = (!empty($m2[7])?$this->getFullClassName($m2[7], $correspondences, $classInfo->namespace):"");
         if (!empty($m2[9])) {
             $matches = array();
             preg_match_all("/([_a-zA-Z0-9\\\]+)/", $m2[9], $matches);
             foreach ($matches[1] as $className) {
-                $classInfo->implements[] = $this->getFullClassName($className, $correspondences,$classInfo->namespace);
-            }            
+                $classInfo->implements[] = $this->getFullClassName($className, $correspondences, $classInfo->namespace);
+            }
         }
         
         $m3 = array();
@@ -104,7 +105,7 @@ class ClassesFinder
     
     /**
      * Gets full class name
-     * 
+     *
      * @param string $name
      * @param array $correspondences
      * @param string $namespace
@@ -117,7 +118,7 @@ class ClassesFinder
     
     /**
      * Gets inherited methods for class
-     * 
+     *
      * @param ClassInfo $classInfo
      * @return string[]
      */
@@ -148,15 +149,15 @@ class ClassesFinder
     }
     
     /**
-     * Gets normalized class name, 
-     * 
+     * Gets normalized class name,
+     *
      * @param string $className
      * @return string
      */
     private function getNormalizedClassName(string $className): string
     {
         if ($className[0]=="\\") {
-            $className = substr($className, 1);    
+            $className = substr($className, 1);
         }
         
         if (strpos($className, "\\")===false) {

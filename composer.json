@@ -6,7 +6,10 @@
   "homepage": "",
   "license": "MIT",
   "require": {
-    "php": "^7.1"
+    "php": "^7.1",
+    "ext-SimpleXML": "*",
+    "ext-cURL": "*",
+    "ext-pdo": "*"
   },
   "autoload": {
     "psr-4": {

@@ -1,39 +1,18 @@
 # PHP Unit Testing API
 
-This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing. Everything about that old API reminds us of bygone ages when developers built huge classes that do "everything", knew nothing about encapsulation except keyword "extends". That is the fundamental "architecture" principle of PHPUnit\Framework\TestCase: https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php, a monster that tries to do everything in ugliest way possible.
+This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing. Everything about that old API reminds us of bygone ages when developers built huge classes that do "everything", knew nothing about encapsulation except keyword "extends". That is the fundamental "architecture" principle of PHPUnit\Framework\TestCase: [https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php](https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php), a monster that tries to do everything in ugliest way possible. Should unit testing logic abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. 
 
-Should unit testing logic abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API standing on following pylons:
+This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API requiring you to only follow these steps:
 
-- [configuration](#configuration): (optional) sets up sql/nosql connection and credentials useful when you want to develop unit tests that use databases
+- [configuration](#configuration): setting up an XML file where unit testing is configured
 - [initialization](#initialization): automated creation of unit testing architecture (classes and methods) for target API under testing
 - [development](#development): user development of one or more unit tests for each class method created above
 - [execution](#execution): automated execution of unit tests on above foundations and display of unit test results on console or as JSON
 
-## INSTALLATION
+API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML + cURL + PDO extensions (latter for URI and SQL testing). To quickly see how it works, check:
 
-This library is fully PSR-4 compliant and only requires PHP7.1+ interpreter. For installation run:
-
-```console
-composer require lucinda/unit-testing
-```
-
-To create (if not found already), execute unit tests and display them in console, run a PHP file in your API root with following content:
-
-```php
-require(__DIR__."/vendor/autoload.php");
-try {
-	new Lucinda\UnitTest\ConsoleController(XML_FILE_NAME, DEVELOPMENT_ENVIRONMENT);
-} catch (Exception $e) {
-	// handle exceptions
-}
-```
-
-Where:
-
-- *XML_FILE_NAME*: relative or absolute location of XML file that configures unit tests (see below about its syntax and structure)
-- *DEVELOPMENT_ENVIRONMENT*: name of current development environment (eg: home, dev, live) that must reflect into a child tag of server in XML above
-
-For more info into above, check CONFIGURATION section below!
+- **[installation](#installation)**: describes how to install API on your computer, in light of steps above
+- **[examples](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests)**: shows real life unit tests for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
 
 ## CONFIGURATION
 
@@ -45,16 +24,16 @@ Similar to PHPUnit, configuration of unit tests is done via an XML file with fol
 <xml>
     <unit_tests>
         <unit_test>
-            <sources path="{PATH}" namespace="{NAMESPACE}"/>
-            <tests path="{PATH}" namespace="{NAMESPACE}"/>
+            <sources path="PATH" namespace="NAMESPACE"/>
+            <tests path="PATH" namespace="NAMESPACE"/>
         </unit_test>
         ...
     </unit_tests>
     <servers>
         <sql>
-            <{ENVIRONMENT}>
-                <server driver="{DRIVER}" host="{HOSTNAME}" port="{PORT}" username="{USERNAME}" password="{PASSWORD}" schema="{SCHEMA}" charset="{CHARSET}"/>
-            </{ENVIRONMENT}>
+            <ENVIRONMENT>
+                <server driver="DRIVER" host="HOSTNAME" port="PORT" username="USERNAME" password="PASSWORD" schema="SCHEMA" charset="CHARSET"/>
+            </ENVIRONMENT>
             ...
         </sql>
     </servers>
@@ -68,7 +47,7 @@ Mandatory tag **unit_tests** stores the suite of unit tests to be executed. Each
 
 These settings will be used to autoload classes test/sources classes whenever used: like in composer's case, you are required to fully qualify namespaces and end them with a backslash.
 
-Optional tag **servers** stores connection settings for SQL servers that are going to be used in the unit tests, broken by **{ENVIRONMENT}** (value of ```php getenv("ENVIRONMENT") ```). Each server must reflect into a **server** subtag where connection is configured by following attributes:  
+Optional tag **servers** stores connection settings for SQL servers that are going to be used in the unit tests, broken by **ENVIRONMENT** (value of ```php getenv("ENVIRONMENT") ```). Each server must reflect into a **server** subtag where connection is configured by following attributes:  
 
 - *DRIVER*: (mandatory) name of SQL vendor, as recognized by PDO. Example: *mysql*
 - *HOSTNAME*: (mandatory) current database server host name. Example: *127.0.0.1*
@@ -78,10 +57,11 @@ Optional tag **servers** stores connection settings for SQL servers that are goi
 - *SCHEMA*: (optional) name of schema unit tests will run on. Example: *test_schema*
 - *CHARSET*: (optional) default character set to use in connection. Example: *utf8*
 
+Example: [unit tests](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml) @ [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
 
 ## INITIALIZATION
 
-By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) (see [installation](#installation) section) classes in *sources* folder are mirrored into *tests* folder according to following rules:
+By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementation (see [installation](#installation) section), classes in *sources* folder are mirrored into *tests* folder according to following rules:
 
 - original folder structure is preserved, only that classes are renamed (see below)
 - original class and file name is preserved, only it has "Test" appended. So *MyClass* and *MyClass.php* is mirrored to *MyClassTest* and *MyClassTest.php*
@@ -148,10 +128,13 @@ return $test->assertNotEmpty("is it empty");
 
 Sometimes it is necessary to test information in database as well. For this you can use [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) class provided by API, which has four public methods:
 
-- *static getInstance()*: opens single connection to SQL server using PDO based on information encapsulated by [Lucinda\UnitTest\Validator\SQL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/DataSource.php) injected beforehand then starts a transaction
-- *__destruct()*: rolls back transaction and closes connection to SQL server
-- *assertStatement(string $query, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator)*: executes a SQL statement and asserts results by delegating to a *ResultValidator* instance implemented by developers
-- *assertPreparedStatement(string $query, array $boundParameters, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator)*: executes a SQL prepared statement and asserts results by delegating to a *ResultValidator* instance implemented by developers
+
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| static getInstance | void | [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) | opens single connection to SQL server using PDO based on information encapsulated by [Lucinda\UnitTest\Validator\SQL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/DataSource.php) injected beforehand then starts a transaction |
+| __destruct | void | void | rolls back transaction and closes connection to SQL server |
+| assertStatement | string $query, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | executes a SQL statement and asserts result by delegating to a [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) instance implemented by developers |
+| assertPreparedStatement | string $query, array $boundParameters, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | executes a SQL prepared statement and asserts result by delegating to a [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) instance implemented by developers |
 
 Assertion example:
 
@@ -220,3 +203,31 @@ API comes already with two with two [Lucinda\UnitTest\Controller](https://github
 - [Lucinda\UnitTest\JsonController](https://github.com/aherne/unit-testing/blob/master/src/JsonController.php): displays unit test results as a json
 
 Developers can build their own extensions that also save results somewhere...
+
+
+## INSTALLATION
+
+This library is fully PSR-4 compliant and only requires PHP7.1+ interpreter. For installation run:
+
+```console
+composer require lucinda/unit-testing
+```
+
+To create (if not found already), execute unit tests and display them in console, run a PHP file in your API root with following content:
+
+```php
+require(__DIR__."/vendor/autoload.php");
+try {
+	new Lucinda\UnitTest\ConsoleController(XML_FILE_NAME, DEVELOPMENT_ENVIRONMENT);
+} catch (Exception $e) {
+	// handle exceptions
+}
+```
+
+Where:
+
+- *XML_FILE_NAME*: relative or absolute location of XML file that configures unit tests (see below about its syntax and structure)
+- *DEVELOPMENT_ENVIRONMENT*: name of current development environment (eg: home, dev, live) that must reflect into a child tag of server in XML above
+
+For more info into above, check CONFIGURATION section below!
+

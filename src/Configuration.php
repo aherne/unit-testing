@@ -34,7 +34,7 @@ class Configuration
     
     /**
      * Detects API under testing by contents of 'unit_tests' tag
-     * 
+     *
      * @throws Exception
      */
     private function setAPIs(): void
@@ -44,14 +44,14 @@ class Configuration
             throw new Exception("Tag empty or not defined in configuration XML: unit_tests");
         }
         $list = (is_array($tmp["unit_test"])?$tmp["unit_test"]:[$tmp["unit_test"]]);
-        foreach ($list as $unitTest) {            
+        foreach ($list as $unitTest) {
             $this->apis[] = new UnitTestedAPI($unitTest);
         }
     }
     
     /**
      * Gets APIs under testing
-     * 
+     *
      * @return UnitTestedAPI[]
      */
     public function getAPIs(): array
@@ -89,7 +89,7 @@ class Configuration
     
     /**
      * Gets SQL data source detected
-     * 
+     *
      * @return DataSource
      */
     public function getSQLDataSource(): ?DataSource
@@ -97,4 +97,3 @@ class Configuration
         return $this->sqlDataSource;
     }
 }
-

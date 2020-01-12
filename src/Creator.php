@@ -28,7 +28,7 @@ class Creator
             $sourcesFinder = new ClassesFinder($this->sourcesFolder);
             $testsFinder = new ClassesFinder($this->testsFolder);
             $this->execute($sourcesFinder->getResults(), $testsFinder->getResults());
-        }   
+        }
     }
     
     /**

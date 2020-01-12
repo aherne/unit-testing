@@ -25,7 +25,7 @@ abstract class Controller
             $namespaces[$api->getTestsNamespace()] = $api->getTestsPath();
         }
         
-        spl_autoload_register(function($className) use ($namespaces) {
+        spl_autoload_register(function ($className) use ($namespaces) {
             foreach ($namespaces as $namespace=>$folder) {
                 $position = strpos($className, $namespace);
                 if ($position === 0) {
@@ -49,9 +49,8 @@ abstract class Controller
     
     /**
      * Handles unit test results by storing or displaying them.
-     * 
+     *
      * @param Result[] $results
      */
     abstract protected function handle(array $results): void;
 }
-
