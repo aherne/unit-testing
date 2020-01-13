@@ -91,7 +91,7 @@ class UnitTestedAPI
             $testsPath = self::DEFAULT_TESTS_PATH;
         }
         if (!file_exists($testsPath)) {
-            throw new Exception("Folder not found on disk: ".$testsPath);
+            mkdir($testsPath, 0777);
         }
         $this->tests_path = $testsPath;
     }
