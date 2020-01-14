@@ -74,7 +74,7 @@ class ClassesFinder
         preg_match_all("/(\n[\s|\t]*use\s+([a-zA-Z0-9_\\\]+)\s+as\s+([a-zA-Z0-9_]+)\s*;)/", $content, $m5);
         $correspondences = [];
         foreach ($m5[1] as $i=>$value) {
-            $correspondences[$m5[2][$i]] = $m5[1][$i];
+            $correspondences[$m5[2][$i]] = $value;
         }
         
         $m2 = array();
@@ -93,8 +93,8 @@ class ClassesFinder
         }
         
         $m3 = array();
-        preg_match_all("/(\n[\s|\t]*(final)?\s*(public)?\s*function\s+([_a-zA-Z0-9]+))/", $content, $m3);
-        $methods = (isset($m3[4])?$m3[4]:[]);
+        preg_match_all("/(\n[\s|\t]*(final)?\s*(public)?\s*(static)?\s*function\s+([_a-zA-Z0-9]+))/", $content, $m3);
+        $methods = (isset($m3[5])?$m3[5]:[]);
         foreach ($methods as $method) {
             if (!in_array($method, ["__construct", "__destruct"])) {
                 $classInfo->methods[$method] = $method;
