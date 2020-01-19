@@ -31,7 +31,7 @@ class Runner
             $this->setResults($sourcesFinder->getResults(), $testsFinder->getResults());
         }
     }
-
+    
     /**
      * Matches sources to tests, executes latter and collects results
      *
@@ -54,7 +54,7 @@ class Runner
             if (!isset($testFiles[$testClassNameWithNamespace])) {
                 $unitTest = new UnitTest();
                 $unitTest->className = $testClassNameWithNamespace;
-                $unitTest->result = new Result(false, "Class not covered by unit test");
+                $unitTest->result = new Result(false, "Class not covered by unit tests");
                 $this->results[] = $unitTest;
             } elseif ($testNamespace!=$testFiles[$testClassNameWithNamespace]->namespace) {
                 $unitTest = new UnitTest();
@@ -68,42 +68,60 @@ class Runner
                         $unitTest = new UnitTest();
                         $unitTest->className = $testClassNameWithNamespace;
                         $unitTest->methodName = $method;
-                        $unitTest->result = new Result(false, "Method not covered by unit test");
+                        $unitTest->result = new Result(false, "Method not covered by unit tests");
                         $this->results[] = $unitTest;
                     } else {
                         $result = $testObject->{$method}();
-                        if (is_array($result) && !empty($result)) {
-                            foreach ($result as $r) {
-                                if ($r instanceof Result) {
-                                    $unitTest = new UnitTest();
-                                    $unitTest->className = $testClassNameWithNamespace;
-                                    $unitTest->methodName = $method;
-                                    $unitTest->result = $r;
-                                    $this->results[] = $unitTest;
-                                } else {
-                                    $unitTest = new UnitTest();
-                                    $unitTest->className = $testClassNameWithNamespace;
-                                    $unitTest->methodName = $method;
-                                    $unitTest->result = new Result(false, "Invalid unit test response");
-                                    $this->results[] = $unitTest;
-                                }
-                            }
-                        } elseif ($result instanceof Result) {
-                            $unitTest = new UnitTest();
-                            $unitTest->className = $testClassNameWithNamespace;
-                            $unitTest->methodName = $method;
-                            $unitTest->result = $result;
-                            $this->results[] = $unitTest;
-                        } else {
-                            $unitTest = new UnitTest();
-                            $unitTest->className = $testClassNameWithNamespace;
-                            $unitTest->methodName = $method;
-                            $unitTest->result = new Result(false, "Invalid unit test response");
-                            $this->results[] = $unitTest;
-                        }
+                        $this->parseResults($result, $testClassNameWithNamespace, $method);
+                    }
+                }
+                foreach ($testFiles[$testClassNameWithNamespace]->methods as $method) {
+                    if (!isset($infoSrc->methods[$method])) {
+                        $result = $testObject->{$method}();
+                        $this->parseResults($result, $testClassNameWithNamespace, $method);
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Parses method execution results of unit tests
+     *
+     * @param mixed $result
+     * @param string $testClassNameWithNamespace
+     * @param string $method
+     */
+    private function parseResults($result, string $testClassNameWithNamespace, string $method): void
+    {
+        if (is_array($result) && !empty($result)) {
+            foreach ($result as $r) {
+                if ($r instanceof Result) {
+                    $unitTest = new UnitTest();
+                    $unitTest->className = $testClassNameWithNamespace;
+                    $unitTest->methodName = $method;
+                    $unitTest->result = $r;
+                    $this->results[] = $unitTest;
+                } else {
+                    $unitTest = new UnitTest();
+                    $unitTest->className = $testClassNameWithNamespace;
+                    $unitTest->methodName = $method;
+                    $unitTest->result = new Result(false, "Invalid unit test response");
+                    $this->results[] = $unitTest;
+                }
+            }
+        } elseif ($result instanceof Result) {
+            $unitTest = new UnitTest();
+            $unitTest->className = $testClassNameWithNamespace;
+            $unitTest->methodName = $method;
+            $unitTest->result = $result;
+            $this->results[] = $unitTest;
+        } else {
+            $unitTest = new UnitTest();
+            $unitTest->className = $testClassNameWithNamespace;
+            $unitTest->methodName = $method;
+            $unitTest->result = new Result(false, "Invalid unit test response");
+            $this->results[] = $unitTest;
         }
     }
     
