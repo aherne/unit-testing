@@ -5,10 +5,10 @@ Table of contents:
 - [About](#about)
 	- [Why Not PHPUnit](#why-not-phpunit)
 - [Configuration](#configuration)
-- [Execution](#execution)
+- [Implementation](#implementation)
     - [Initialization](#initialization)
     - [Development](#development)
-    - [Running](#running)
+    - [Execution](#execution)
 - [Installation](#installation)
 - [Unit Tests](#unit-tests)
 - [Assertions](#assertions)
@@ -82,7 +82,7 @@ Optional tag **servers** stores connection settings for SQL servers that are goi
 
 Example: [unit tests](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml) @ [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
 
-## Execution
+## Implementation
 
 ### Initialization
 
