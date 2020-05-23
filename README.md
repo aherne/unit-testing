@@ -1,8 +1,23 @@
 # PHP Unit Testing API
 
-This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing. Everything about that old API reminds of bygone ages when developers built huge classes that do "everything", knew nothing about encapsulation except keyword "extends" (doubters should check [https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php](https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php) all PHPUnit tests must extend!). 
+Table of contents:
 
-Should unit testing APIs abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API requiring you to only follow these steps:
+- [About](#about)
+	- [Why Not PHPUnit](#why-not-phpunit)
+- [Configuration](#configuration)
+- [Compilation](#compilation)
+- [Installation](#installation)
+- [Unit Tests](#unit-tests)
+- [Examples](#examples)
+- [Reference Guide](#reference-guide)
+
+## About 
+
+This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing.  This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API! 
+
+![diagram](https://www.lucinda-framework.com/public/images/svg/unit-testing-api.svg)
+
+It only requires developer to follow these steps:
 
 - [configuration](#configuration): setting up an XML file where unit testing is configured
 - [initialization](#initialization): automated creation of unit testing architecture (classes and methods) for target API under testing
@@ -14,7 +29,13 @@ API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML +
 - **[installation](#installation)**: describes how to install API on your computer, in light of steps above
 - **[examples](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests)**: shows real life unit tests for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
 
-## CONFIGURATION
+### Why Not PHPUnit
+
+Everything about that PHPUnit reminds of bygone ages when developers built huge classes that do "everything" and knew nothing about encapsulation except keyword "extends" (doubters should check [https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php](https://github.com/sebastianbergmann/phpunit/blob/master/src/Framework/TestCase.php) all PHPUnit tests must extend!). 
+
+Can something better be done? Should unit testing APIs abide to good principles of object oriented programming or only the code that is being tested? IMHO, as long as a developer feels confortable working with a mess, it will become a bad precedent to build something similar later on. **Something much better MUST be done!**
+
+## Configuration
 
 Similar to PHPUnit, configuration of unit tests is done via an XML file with following syntax:
 
@@ -59,7 +80,7 @@ Optional tag **servers** stores connection settings for SQL servers that are goi
 
 Example: [unit tests](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml) @ [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
 
-## INITIALIZATION
+## Initialization
 
 By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementation (see [installation](#installation) section), classes in *sources* folder are mirrored into *tests* folder according to following rules:
 
@@ -72,7 +93,7 @@ By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit
 
 This insures 100% coverage is maintained on every execution, leaving programmers to develop missing unit tests themselves
 
-## DEVELOPMENT
+## Development
 
 In order to be covered, each *tests* class public method MUST return either a single [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) instance or a list of former, depending on whether or not you desire one or more tests. Each test has a status (passed or not) and an optional message (containing details that identify test against siblings).
 
@@ -104,7 +125,7 @@ class BarTest { // mirrors class: Bar
 }
 ```
 
-### ASSERTIONS ON PRIMITIVE VALUES
+### Assertions on Primitive Values
 
 API allows you to make assertions on all PHP primitive data types:
 
@@ -124,7 +145,7 @@ $test = new Lucinda\UnitTest\Validator\Arrays($data);
 return $test->assertNotEmpty("is it empty");
 ```
 
-### ASSERTIONS ON SQL QUERIES RESULTS
+### Assertions on SQL Queries Results
 
 Sometimes it is necessary to test information in database as well. For this you can use [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) class provided by API, which has four public methods:
 
@@ -151,7 +172,7 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
 
 Above mechanism allows you to develop MULTIPLE assertions on a single [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) instance, which in turn corresponds to a single SQL connection.
 
-### ASSERTIONS ON URL EXECUTION RESULTS
+### Assertions on URL Execution Results
 
 Sometimes it is necessary to test results of URL execution. For this you can use [Lucinda\UnitTest\Validator\URL](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL.php) class provided by API, which has two public methods:
 
@@ -174,7 +195,7 @@ $test->assert(new class extends Lucinda\UnitTest\Validator\URL\ResultValidator()
 
 Above mechanism allows you to develop MULTIPLE assertions on same URL execution result via a single [Lucinda\UnitTest\Validator\URL](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL.php) instance.
 
-### ASSERTIONS ON FILES
+### Assertions on Files
 
 One can perform assertions on files by using [Lucinda\UnitTest\Validator\Files](https://github.com/aherne/unit-testing/blob/master/src/Validator/Files.php) class, which comes with following public methods:
 
