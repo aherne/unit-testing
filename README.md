@@ -12,6 +12,7 @@ Table of contents:
 - [Installation](#installation)
 - [Unit Tests](#unit-tests)
 - [Assertions](#assertions)
+- [Examples](#examples)
 
 ## About 
 
@@ -29,6 +30,7 @@ It only requires developer to follow these steps:
 API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML + cURL + PDO extensions (latter for URI and SQL testing). To quickly see how it works, check:
 
 - **[installation](#installation)**: describes how to install API on your computer, in light of steps above
+- **[assertions](#assertions)**: describes how to make assertions using this API
 - **[examples](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests)**: shows real life unit tests for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
 
 ### Why Not PHPUnit
@@ -259,3 +261,18 @@ One can perform assertions on files by using [Lucinda\UnitTest\Validator\Files](
 | assertSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is of expected size |
 | assertNotSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is not of expected size |
 
+Assertion example:
+
+```php
+$test = new Lucinda\UnitTest\Validator\Files("foo/bar.php");
+return $test->assertExists();
+```
+
+## Examples
+
+This [WebSecurity API](https://github.com/aherne/php-security-api/tree/v3.0.0) is among others that use this API for unit testing, so check:
+
+- [unit-tests.xml](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml): for an example of configuration
+- [test.php](https://github.com/aherne/oauth2client/blob/v3.0.0/test.php): for an example of test suite executor
+- [tests](https://github.com/aherne/oauth2client/tree/v3.0.0/tests): for examples of unit tests of classes from [src](https://github.com/aherne/oauth2client/tree/v3.0.0/src)
+- [tests_drivers](https://github.com/aherne/oauth2client/tree/v3.0.0/tests): for examples of unit tests of classes from [drivers](https://github.com/aherne/oauth2client/tree/v3.0.0/drivers)
