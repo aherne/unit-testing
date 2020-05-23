@@ -270,7 +270,7 @@ return $test->assertExists();
 
 ## Examples
 
-This [WebSecurity API](https://github.com/aherne/php-security-api/tree/v3.0.0) is among others that use this API for unit testing, so check:
+This [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0) is among others that use this API for unit testing, so check:
 
 - [unit-tests.xml](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml): for an example of configuration
 - [test.php](https://github.com/aherne/oauth2client/blob/v3.0.0/test.php): for an example of test suite executor
