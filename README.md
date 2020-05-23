@@ -5,15 +5,17 @@ Table of contents:
 - [About](#about)
 	- [Why Not PHPUnit](#why-not-phpunit)
 - [Configuration](#configuration)
-- [Compilation](#compilation)
+- [Execution](#execution)
+    - [Initialization](#initialization)
+    - [Development](#development)
+    - [Running](#running)
 - [Installation](#installation)
 - [Unit Tests](#unit-tests)
-- [Examples](#examples)
-- [Reference Guide](#reference-guide)
+- [Assertions](#assertions)
 
 ## About 
 
-This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing.  This API aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API! 
+This library was in part created out of frustration while working with PHPUnit, the standard solution used by over 99% of PHP applications that feature unit testing.  This current software aims at building something that PHPUnit is not: a cleanly coded, zero dependencies API! 
 
 ![diagram](https://www.lucinda-framework.com/public/images/svg/unit-testing-api.svg)
 
@@ -80,7 +82,9 @@ Optional tag **servers** stores connection settings for SQL servers that are goi
 
 Example: [unit tests](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml) @ [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
 
-## Initialization
+## Execution
+
+### Initialization
 
 By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementation (see [installation](#installation) section), classes in *sources* folder are mirrored into *tests* folder according to following rules:
 
@@ -93,7 +97,7 @@ By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit
 
 This insures 100% coverage is maintained on every execution, leaving programmers to develop missing unit tests themselves
 
-## Development
+### Development
 
 In order to be covered, each *tests* class public method MUST return either a single [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) instance or a list of former, depending on whether or not you desire one or more tests. Each test has a status (passed or not) and an optional message (containing details that identify test against siblings).
 
@@ -124,6 +128,52 @@ class BarTest { // mirrors class: Bar
     }
 }
 ```
+
+### Execution
+
+By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) (see [installation](#installation) section) classes in *tests* folder are instanced, their public methods executed in the order they are set and [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) instances are collected. The logic is as following:
+
+- if a class @ *src* has no mirror class @ *tests*, unit test is marked as failed for respective class!
+- if a class @ *src* has public methods not present in mirror class @ *tests*, unit test is marked as failed for respective method!
+- if any of methods of mirror class do not return a [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) or a list of latter, unit test is marked as failed for respective method with message that method is not covered
+- results of unit tests are collected into a list of [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php)
+
+This abstract class comes with following methods of interest:
+
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| __construct | string $xmlFilePath, string $developmentEnvironment | void | Reads xml based on development environment, creates missing unit tests and executes them all for each API referenced |
+| abstract protected handle | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php)[] | void | Handles unit test results by storing or displaying them. |
+
+API comes already with two with two [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementations:
+
+- [Lucinda\UnitTest\ConsoleController](https://github.com/aherne/unit-testing/blob/master/src/ConsoleController.php): displays unit test results in a table on console
+- [Lucinda\UnitTest\JsonController](https://github.com/aherne/unit-testing/blob/master/src/JsonController.php): displays unit test results as a json
+
+Developers can build their own extensions that also save results somewhere...
+
+## Installation
+
+In folder where your API under testing resides, run this command in console:
+
+```console
+composer require lucinda/unit-testing
+```
+
+Then create a *unit-tests.xml* file holding configuration settings (see [configuration](#configuration) above) and a *test.php* file with following code:
+
+```php
+require(__DIR__."/vendor/autoload.php");
+try {
+	new Lucinda\UnitTest\ConsoleController("unit-tests.xml", "local");
+} catch (Exception $e) {
+	// handle exceptions
+}
+```
+
+To see a live example of usage, check [unit tests](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests) for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)!
+
+## Assertions
 
 ### Assertions on Primitive Values
 
@@ -208,49 +258,4 @@ One can perform assertions on files by using [Lucinda\UnitTest\Validator\Files](
 | assertNotContains | string $expected, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file doesn't contain expected string |
 | assertSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is of expected size |
 | assertNotSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is not of expected size |
-
-## EXECUTION
-
-By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) (see [installation](#installation) section) classes in *tests* folder are instanced, their public methods executed in the order they are set and [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) instances are collected. The logic is as following:
-
-- if a class @ *src* has no mirror class @ *tests*, unit test is marked as failed for respective class!
-- if a class @ *src* has public methods not present in mirror class @ *tests*, unit test is marked as failed for respective method!
-- if any of methods of mirror class do not return a [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) or a list of latter, unit test is marked as failed for respective method with message that method is not covered
-- results of unit tests are collected into a list of [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php)
-
-This abstract class comes with following methods of interest:
-
-| Method | Arguments | Returns | Description |
-| --- | --- | --- | --- |
-| __construct | string $xmlFilePath, string $developmentEnvironment | void | Reads xml based on development environment, creates missing unit tests and executes them all for each API referenced |
-| abstract protected handle | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php)[] | void | Handles unit test results by storing or displaying them. |
-
-API comes already with two with two [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementations:
-
-- [Lucinda\UnitTest\ConsoleController](https://github.com/aherne/unit-testing/blob/master/src/ConsoleController.php): displays unit test results in a table on console
-- [Lucinda\UnitTest\JsonController](https://github.com/aherne/unit-testing/blob/master/src/JsonController.php): displays unit test results as a json
-
-Developers can build their own extensions that also save results somewhere...
-
-
-## INSTALLATION
-
-In folder where your API under testing resides, run this command in console:
-
-```console
-composer require lucinda/unit-testing
-```
-
-Then create a *unit-tests.xml* file holding configuration settings (see [configuration](#configuration) above) and a *test.php* file with following code:
-
-```php
-require(__DIR__."/vendor/autoload.php");
-try {
-	new Lucinda\UnitTest\ConsoleController("unit-tests.xml", "local");
-} catch (Exception $e) {
-	// handle exceptions
-}
-```
-
-To see a live example of usage, check [unit tests](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests) for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)!
 
