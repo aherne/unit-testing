@@ -45,6 +45,6 @@ class ConsoleController extends Controller
             $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
         }
         echo str_repeat("-", $emptyLineLength)."\n";
-        echo "Total: ".($totals["passed"]+$totals["failed"])." (".$totals["passed"]." passed, ".$totals["failed"]." failed)";
+        echo "Total: ".($totals["passed"]+$totals["failed"])." (".$totals["passed"]." passed, ".$totals["failed"]." failed)\n";
     }
 }
