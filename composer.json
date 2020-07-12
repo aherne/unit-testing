@@ -3,7 +3,7 @@
   "type": "library",
   "description": "Lightweight PHP7.1 library for unit testing with zero dependencies",
   "keywords": ["unit testing"],
-  "homepage": "",
+  "homepage": "https://github.com/aherne/unit-testing",
   "license": "MIT",
   "require": {
     "php": "^7.1",
