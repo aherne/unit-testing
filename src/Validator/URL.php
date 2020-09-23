@@ -3,6 +3,7 @@ namespace Lucinda\UnitTest\Validator;
 
 use Lucinda\UnitTest\Validator\URL\Request;
 use Lucinda\UnitTest\Validator\URL\ResultValidator;
+use Lucinda\UnitTest\Validator\URL\DataSource;
 
 /**
  * Defines a UNIT TEST pattern for URL testing.
@@ -14,14 +15,11 @@ class URL
     /**
      * Generates a request to an URL based on criteria.
      *
-     * @param string $url URL to use in request.
-     * @param string $requestMethod HTTP request method to use when calling URL. Default: GET
-     * @param array $requestParameters List of parameters to send in request specific to request method. Default: none
-     * @param array $requestHeaders List of headers to send along with URL request.
+     * @param DataSource $dataSource
      */
-    public function __construct(string $url, string $requestMethod="GET", array $requestParameters=[], array $requestHeaders=[])
+    public function __construct(DataSource $dataSource)
     {
-        $request = new Request($url, $requestMethod, $requestParameters, $requestHeaders);
+        $request = new Request($dataSource);
         $this->response = $request->getResponse();
     }
     
