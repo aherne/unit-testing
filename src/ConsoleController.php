@@ -24,38 +24,38 @@ class ConsoleController extends Controller
                 $text->setFontStyle(\Lucinda\Console\FontStyle::BOLD);
                 return $text;
             }, $columns));
-                foreach ($results as $unitTest) {
-                    $status = null;
-                    if ($unitTest->result->hasPassed()) {
-                        $status = new \Lucinda\Console\Text(" PASSED ");
-                        $status->setBackgroundColor(\Lucinda\Console\BackgroundColor::GREEN);
-                    } else {
-                        $status = new \Lucinda\Console\Text(" FAILED ");
-                        $status->setBackgroundColor(\Lucinda\Console\BackgroundColor::RED);
-                    }
-                    $object->addRow([
-                        $unitTest->className,
-                        $unitTest->methodName,
-                        $status,
-                        $unitTest->result->getMessage()
-                    ]);
-                    $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
+            foreach ($results as $unitTest) {
+                $status = null;
+                if ($unitTest->result->hasPassed()) {
+                    $status = new \Lucinda\Console\Text(" PASSED ");
+                    $status->setBackgroundColor(\Lucinda\Console\BackgroundColor::GREEN);
+                } else {
+                    $status = new \Lucinda\Console\Text(" FAILED ");
+                    $status->setBackgroundColor(\Lucinda\Console\BackgroundColor::RED);
                 }
-                $object->display();
+                $object->addRow([
+                    $unitTest->className,
+                    $unitTest->methodName,
+                    $status,
+                    $unitTest->result->getMessage()
+                ]);
+                $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
+            }
+            $object->display();
         } else {
             $object = new \Lucinda\Console\Table(array_map(function ($column) {
                 return strtoupper($column);
             }, $columns));
-                foreach ($results as $unitTest) {
-                    $object->addRow([
-                        $unitTest->className,
-                        $unitTest->methodName,
-                        ($unitTest->result->hasPassed()?"PASSED":"FAILED"),
-                        $unitTest->result->getMessage()
-                    ]);
-                    $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
-                }
-                $object->display();
+            foreach ($results as $unitTest) {
+                $object->addRow([
+                    $unitTest->className,
+                    $unitTest->methodName,
+                    ($unitTest->result->hasPassed()?"PASSED":"FAILED"),
+                    $unitTest->result->getMessage()
+                ]);
+                $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
+            }
+            $object->display();
         }
         
         echo "Total: ".($totals["passed"]+$totals["failed"])." (".$totals["passed"]." passed, ".$totals["failed"]." failed)\n";
