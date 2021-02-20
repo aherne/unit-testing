@@ -15,36 +15,47 @@ class ConsoleController extends Controller
      */
     protected function handle(array $results): void
     {
-        // get max lengths
-        $maxClassLength = 5;
-        $maxMethodLength = 6;
-        $maxDescriptionLength = 11;
-        foreach ($results as $unitTest) {
-            if (strlen($unitTest->className)>$maxClassLength) {
-                $maxClassLength = strlen($unitTest->className);
+        $totals = ["passed"=>0, "failed"=>0];
+        
+        $columns = ["Class", "Method", "Status", "Description"];
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            $object = new \Lucinda\Console\Table(function ($column) {
+                $text = new \Lucinda\Console\Text($column);
+                $text->setFontStyle(\Lucinda\Console\FontStyle::BOLD);
+                return $text;
+            }, $columns);
+            foreach ($results as $unitTest) {
+                $status = null;
+                if ($unitTest->result->hasPassed()) {
+                    $status = new \Lucinda\Console\Text(" PASSED ");
+                    $status->setBackgroundColor(\Lucinda\Console\BackgroundColor::GREEN);
+                } else {
+                    $status = new \Lucinda\Console\Text(" FAILED ");
+                    $status->setBackgroundColor(\Lucinda\Console\BackgroundColor::RED);
+                }
+                $object->addRow([
+                    $unitTest->className,
+                    $unitTest->methodName,
+                    $status,
+                    $unitTest->result->getMessage()
+                ]);
+                $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
             }
-            if (strlen($unitTest->methodName)>$maxMethodLength) {
-                $maxMethodLength = strlen($unitTest->methodName);
-            }
-            if (strlen($unitTest->methodName)>$maxMethodLength) {
-                $maxMethodLength = strlen($unitTest->methodName);
-            }
-            if (strlen($unitTest->result->getMessage())>$maxDescriptionLength) {
-                $maxDescriptionLength = strlen($unitTest->result->getMessage());
+        } else {
+            $object = new \Lucinda\Console\Table(function ($column) {
+                return strtoupper($column);
+            }, $columns);
+            foreach ($results as $unitTest) {
+                $object->addRow([
+                    $unitTest->className,
+                    $unitTest->methodName,
+                    ($unitTest->result->hasPassed()?"PASSED":"FAILED"),
+                    $unitTest->result->getMessage()
+                ]);
+                $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
             }
         }
         
-        // compile lines
-        $totals = ["passed"=>0, "failed"=>0];
-        $emptyLineLength = $maxClassLength+4+$maxMethodLength+4+6+4+$maxDescriptionLength+4;
-        echo str_repeat("-", $emptyLineLength)."\n";
-        echo "| CLASS".str_repeat(" ", $maxClassLength-5)." | METHOD".str_repeat(" ", $maxMethodLength-6)." | STATUS | DESCRIPTION".str_repeat(" ", $maxDescriptionLength-11)." |\n";
-        foreach ($results as $unitTest) {
-            echo str_repeat("-", $emptyLineLength)."\n";
-            echo "| ".$unitTest->className.str_repeat(" ", $maxClassLength-strlen($unitTest->className))." | ".$unitTest->methodName.str_repeat(" ", $maxMethodLength-strlen($unitTest->methodName))." | ".($unitTest->result->hasPassed()?"passed":"failed")." | ".$unitTest->result->getMessage().str_repeat(" ", $maxDescriptionLength-strlen($unitTest->result->getMessage()))." |\n";
-            $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
-        }
-        echo str_repeat("-", $emptyLineLength)."\n";
         echo "Total: ".($totals["passed"]+$totals["failed"])." (".$totals["passed"]." passed, ".$totals["failed"]." failed)\n";
     }
 }

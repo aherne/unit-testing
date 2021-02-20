@@ -27,7 +27,7 @@ It only requires developer to follow these steps:
 - [development](#development): user development of one or more unit tests for each class method created above
 - [execution](#execution): automated execution of unit tests on above foundations and display of unit test results on console or as JSON
 
-API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML + cURL + PDO extensions (latter for URI and SQL testing). To quickly see how it works, check:
+API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter, SimpleXML + cURL + PDO extensions (latter for URI and SQL testing) and [Console Table API](https://github.com/aherne/console_table) (for displaying unit test results). To quickly see how it works, check:
 
 - **[installation](#installation)**: describes how to install API on your computer, in light of steps above
 - **[assertions](#assertions)**: describes how to make assertions using this API
