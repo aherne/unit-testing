@@ -15,7 +15,7 @@ class DataSource
     
     /**
      * Sets url to connect to
-     * 
+     *
      * @param string $url
      */
     public function __construct(string $url)
@@ -25,7 +25,7 @@ class DataSource
     
     /**
      * Gets url to connect to
-     * 
+     *
      * @return string
      */
     public function getURL(): string
@@ -35,7 +35,7 @@ class DataSource
     
     /**
      * Sets HTTP request method to use in connection
-     * 
+     *
      * @param string $requestMethod
      * @throws Exception
      */
@@ -49,7 +49,7 @@ class DataSource
     
     /**
      * Gets HTTP request method to use in connection
-     * 
+     *
      * @return string
      */
     public function getRequestMethod(): string
@@ -59,7 +59,7 @@ class DataSource
     
     /**
      * Adds a request parameter by name and value
-     * 
+     *
      * @param mixed $name
      * @param mixed $value
      */
@@ -70,7 +70,7 @@ class DataSource
     
     /**
      * Gets all request parameters added
-     * 
+     *
      * @return array
      */
     public function getRequestParameters(): array
@@ -79,8 +79,8 @@ class DataSource
     }
     
     /**
-     * Adds a request header by name and value 
-     * 
+     * Adds a request header by name and value
+     *
      * @param string $name
      * @param string $value
      */
@@ -91,7 +91,7 @@ class DataSource
     
     /**
      * Gets all request headers added
-     * 
+     *
      * @return array
      */
     public function getRequestHeaders(): array
