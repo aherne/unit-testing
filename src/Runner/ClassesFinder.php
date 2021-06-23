@@ -55,6 +55,56 @@ class ClassesFinder
     }
     
     /**
+     * Gets contents of PHP file, stripping comments
+     *
+     * @param string $path
+     * @return string
+     * @see https://stackoverflow.com/questions/503871/best-way-to-automatically-remove-comments-from-php-code
+     */
+    private function getContents(string $path): string
+    {
+        $str = file_get_contents($path);
+        $commentTokens = [
+            \T_COMMENT,
+            \T_DOC_COMMENT,
+        ];
+        $tokens = token_get_all($str);
+        $lines = explode(PHP_EOL, $str);
+        $s = '';
+        foreach ($tokens as $token) {
+            if (is_array($token)) {
+                if (in_array($token[0], $commentTokens)) {
+                    $comment = $token[1];
+                    $lineNb = $token[2];
+                    $firstLine = $lines[$lineNb - 1];
+                    $p = explode(PHP_EOL, $comment);
+                    $nbLineComments = count($p);
+                    if ($nbLineComments < 1) {
+                        $nbLineComments = 1;
+                    }
+                    $firstCommentLine = array_shift($p);
+                    
+                    $isStandAlone = (trim($firstLine) === trim($firstCommentLine));
+                    
+                    if (false === $isStandAlone) {
+                        if (2 === $nbLineComments) {
+                            $s .= PHP_EOL;
+                        }
+                        continue; // just remove inline comments
+                    }
+                    
+                    // stand alone case
+                    $s .= str_repeat(PHP_EOL, $nbLineComments - 1);
+                    continue;
+                }
+                $token = $token[1];
+            }
+            $s .= $token;
+        }
+        return $s;
+    }
+    
+    /**
      * Reads class file and detects namespace (if any), class name, public methods and file location.
      *
      * @param string $fileName Absolute location of class file.
@@ -64,7 +114,7 @@ class ClassesFinder
     {
         $classInfo = new ClassInfo();
         $classInfo->filePath = $fileName;
-        $content = file_get_contents($fileName);
+        $content = $this->getContents($fileName);
         
         $m1 = array();
         preg_match("/(\n[\s|\t]*namespace\s*([^;]+))/", $content, $m1);
