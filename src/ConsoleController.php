@@ -41,7 +41,7 @@ class ConsoleController extends Controller
                 ]);
                 $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
             }
-            $object->display();
+            echo $object->toString()."\n";
         } else {
             $object = new \Lucinda\Console\Table(array_map(function ($column) {
                 return strtoupper($column);
@@ -55,7 +55,7 @@ class ConsoleController extends Controller
                 ]);
                 $totals[$unitTest->result->hasPassed()?"passed":"failed"]++;
             }
-            $object->display();
+            echo $object->toString()."\n";
         }
         
         echo "Total: ".($totals["passed"]+$totals["failed"])." (".$totals["passed"]." passed, ".$totals["failed"]." failed)\n";
