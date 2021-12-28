@@ -27,7 +27,7 @@ It only requires developer to follow these steps:
 - [development](#development): user development of one or more unit tests for each class method created above
 - [execution](#execution): automated execution of unit tests on above foundations and display of unit test results on console or as JSON
 
-API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter, SimpleXML + cURL + PDO extensions (latter for URI and SQL testing) and [Console Table API](https://github.com/aherne/console_table) (for displaying unit test results). To quickly see how it works, check:
+API is fully PSR-4 compliant, only requiring PHP8.1+ interpreter, SimpleXML + cURL + PDO extensions (latter for URI and SQL testing) and [Console Table API](https://github.com/aherne/console_table) (for displaying unit test results). To quickly see how it works, check:
 
 - **[installation](#installation)**: describes how to install API on your computer, in light of steps above
 - **[assertions](#assertions)**: describes how to make assertions using this API
@@ -88,7 +88,7 @@ Example: [unit tests](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-te
 
 ### Initialization
 
-By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementation (see [installation](#installation) section), classes in *sources* folder are mirrored into *tests* folder according to following rules:
+By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/v2.0/src/Controller.php) implementation (see [installation](#installation) section), classes in *sources* folder are mirrored into *tests* folder according to following rules:
 
 - original folder structure is preserved, only that classes are renamed (see below)
 - original class and file name is preserved, only it has "Test" appended. So *MyClass* and *MyClass.php* is mirrored to *MyClassTest* and *MyClassTest.php*
@@ -101,7 +101,7 @@ This insures 100% coverage is maintained on every execution, leaving programmers
 
 ### Development
 
-In order to be covered, each *tests* class public method MUST return either a single [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) instance or a list of former, depending on whether or not you desire one or more tests. Each test has a status (passed or not) and an optional message (containing details that identify test against siblings).
+In order to be covered, each *tests* class public method MUST return either a single [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) instance or a list of former, depending on whether or not you desire one or more tests. Each test has a status (passed or not) and an optional message (containing details that identify test against siblings).
 
 Example:
 
@@ -133,24 +133,24 @@ class BarTest { // mirrors class: Bar
 
 ### Execution
 
-By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) (see [installation](#installation) section) classes in *tests* folder are instanced, their public methods executed in the order they are set and [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) instances are collected. The logic is as following:
+By simply running a [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/v2.0/src/Controller.php) (see [installation](#installation) section) classes in *tests* folder are instanced, their public methods executed in the order they are set and [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) instances are collected. The logic is as following:
 
 - if a class @ *src* has no mirror class @ *tests*, unit test is marked as failed for respective class!
 - if a class @ *src* has public methods not present in mirror class @ *tests*, unit test is marked as failed for respective method!
-- if any of methods of mirror class do not return a [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) or a list of latter, unit test is marked as failed for respective method with message that method is not covered
-- results of unit tests are collected into a list of [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php)
+- if any of methods of mirror class do not return a [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) or a list of latter, unit test is marked as failed for respective method with message that method is not covered
+- results of unit tests are collected into a list of [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php)
 
 This abstract class comes with following methods of interest:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
 | __construct | string $xmlFilePath, string $developmentEnvironment | void | Reads xml based on development environment, creates missing unit tests and executes them all for each API referenced |
-| abstract protected handle | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php)[] | void | Handles unit test results by storing or displaying them. |
+| abstract protected handle | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php)[] | void | Handles unit test results by storing or displaying them. |
 
-API comes already with two with two [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/master/src/Controller.php) implementations:
+API comes already with two with two [Lucinda\UnitTest\Controller](https://github.com/aherne/unit-testing/blob/v2.0/src/Controller.php) implementations:
 
-- [Lucinda\UnitTest\ConsoleController](https://github.com/aherne/unit-testing/blob/master/src/ConsoleController.php): displays unit test results in a table on console
-- [Lucinda\UnitTest\JsonController](https://github.com/aherne/unit-testing/blob/master/src/JsonController.php): displays unit test results as a json
+- [Lucinda\UnitTest\ConsoleController](https://github.com/aherne/unit-testing/blob/v2.0/src/ConsoleController.php): displays unit test results in a table on console
+- [Lucinda\UnitTest\JsonController](https://github.com/aherne/unit-testing/blob/v2.0/src/JsonController.php): displays unit test results as a json
 
 Developers can build their own extensions that also save results somewhere...
 
@@ -181,12 +181,12 @@ To see a live example of usage, check [unit tests](https://github.com/aherne/oau
 
 API allows you to make assertions on all PHP primitive data types:
 
-- *integer*: via [Lucinda\UnitTest\Validator\Integers](https://github.com/aherne/unit-testing/blob/master/src/Validator/Integers.php)
-- *float*: via [Lucinda\UnitTest\Validator\Floats](https://github.com/aherne/unit-testing/blob/master/src/Validator/Floats.php)
-- *string*: via [Lucinda\UnitTest\Validator\Strings](https://github.com/aherne/unit-testing/blob/master/src/Validator/Strings.php)
-- *boolean*: via [Lucinda\UnitTest\Validator\Booleans](https://github.com/aherne/unit-testing/blob/master/src/Validator/Booleans.php)
-- *array*: via [Lucinda\UnitTest\Validator\Arrays](https://github.com/aherne/unit-testing/blob/master/src/Validator/Arrays.php)
-- *object*: via [Lucinda\UnitTest\Validator\Objects](https://github.com/aherne/unit-testing/blob/master/src/Validator/Objects.php)
+- *integer*: via [Lucinda\UnitTest\Validator\Integers](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/Integers.php)
+- *float*: via [Lucinda\UnitTest\Validator\Floats](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/Floats.php)
+- *string*: via [Lucinda\UnitTest\Validator\Strings](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/Strings.php)
+- *boolean*: via [Lucinda\UnitTest\Validator\Booleans](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/Booleans.php)
+- *array*: via [Lucinda\UnitTest\Validator\Arrays](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/Arrays.php)
+- *object*: via [Lucinda\UnitTest\Validator\Objects](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/Objects.php)
 
 Each of these classes has a constructor in which a value of respective type is injected then a number of methods that make assertions on that value. In real life, you will only use those classes to make single assertions. 
 
@@ -199,16 +199,16 @@ return $test->assertNotEmpty("is it empty");
 
 ### Assertions on SQL Queries Results
 
-Sometimes it is necessary to test information in database as well. For this you can use [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) class provided by API, which has four public methods:
+Sometimes it is necessary to test information in database as well. For this you can use [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/SQL.php) class provided by API, which has four public methods:
 
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
-| static setDataSource | [Lucinda\UnitTest\Validator\SQL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/DataSource.php) | void | Sets a data source encapsulating settings to use in connection to server later on |
-| static getInstance | void | [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) | Opens single connection to SQL server using PDO based on data source injected beforehand then starts a transaction |
+| static setDataSource | [Lucinda\UnitTest\Validator\SQL\DataSource](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/SQL/DataSource.php) | void | Sets a data source encapsulating settings to use in connection to server later on |
+| static getInstance | void | [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/SQL.php) | Opens single connection to SQL server using PDO based on data source injected beforehand then starts a transaction |
 | __destruct | void | void | rolls back transaction and closes connection to SQL server |
-| assertStatement | string $query, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Executes a SQL statement and asserts result by delegating to validator received as argument |
-| assertPreparedStatement | string $query, array $boundParameters, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Executes a SQL prepared statement and asserts result by delegating to validator received as argument |
+| assertStatement | string $query, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Executes a SQL statement and asserts result by delegating to validator received as argument |
+| assertPreparedStatement | string $query, array $boundParameters, [Lucinda\UnitTest\Validator\SQL\ResultValidator](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/SQL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Executes a SQL prepared statement and asserts result by delegating to validator received as argument |
 
 Assertion example:
 
@@ -222,16 +222,16 @@ $test->assertStatement("SELECT COUNT(id) AS nr FROM users", new class extends Lu
 });
 ```
 
-Above mechanism allows you to develop MULTIPLE assertions on a single [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/master/src/Validator/SQL.php) instance, which in turn corresponds to a single SQL connection.
+Above mechanism allows you to develop MULTIPLE assertions on a single [Lucinda\UnitTest\Validator\SQL](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/SQL.php) instance, which in turn corresponds to a single SQL connection.
 
 ### Assertions on URL Execution Results
 
-Sometimes it is necessary to test results of URL execution. For this you can use [Lucinda\UnitTest\Validator\URL](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL.php) class provided by API, which has two public methods:
+Sometimes it is necessary to test results of URL execution. For this you can use [Lucinda\UnitTest\Validator\URL](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/URL.php) class provided by API, which has two public methods:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
-| __construct | [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/DataSource.php) $dataSource | void | Opens connection to an URL using Lucinda\UnitTest\Validator\URL\Request based on information encapsulated by [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/DataSource.php) then collects results into a [Lucinda\UnitTest\Validator\URL\Response](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/Response.php) instance. |
-| assert | [Lucinda\UnitTest\Validator\URL\ResultValidator](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts response instance above by delegating to validator received as argument |
+| __construct | [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/URL/DataSource.php) $dataSource | void | Opens connection to an URL using Lucinda\UnitTest\Validator\URL\Request based on information encapsulated by [Lucinda\UnitTest\Validator\URL\DataSource](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/URL/DataSource.php) then collects results into a [Lucinda\UnitTest\Validator\URL\Response](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/URL/Response.php) instance. |
+| assert | [Lucinda\UnitTest\Validator\URL\ResultValidator](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/URL/ResultValidator.php) $validator | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Asserts response instance above by delegating to validator received as argument |
 
 Assertion example:
 
@@ -245,21 +245,21 @@ $test->assert(new class extends Lucinda\UnitTest\Validator\URL\ResultValidator()
 });
 ```
 
-Above mechanism allows you to develop MULTIPLE assertions on same URL execution result via a single [Lucinda\UnitTest\Validator\URL](https://github.com/aherne/unit-testing/blob/master/src/Validator/URL.php) instance.
+Above mechanism allows you to develop MULTIPLE assertions on same URL execution result via a single [Lucinda\UnitTest\Validator\URL](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/URL.php) instance.
 
 ### Assertions on Files
 
-One can perform assertions on files by using [Lucinda\UnitTest\Validator\Files](https://github.com/aherne/unit-testing/blob/master/src/Validator/Files.php) class, which comes with following public methods:
+One can perform assertions on files by using [Lucinda\UnitTest\Validator\Files](https://github.com/aherne/unit-testing/blob/v2.0/src/Validator/Files.php) class, which comes with following public methods:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
 | __construct | string $path | void | Records path to file under testing |
-| assertExists | string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file exists |
-| assertNotExists | string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file not exists |
-| assertContains | string $expected, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file contains expected string |
-| assertNotContains | string $expected, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Asserts if file doesn't contain expected string |
-| assertSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is of expected size |
-| assertNotSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/master/src/Result.php) | Assert if file is not of expected size |
+| assertExists | string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Asserts if file exists |
+| assertNotExists | string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Asserts if file not exists |
+| assertContains | string $expected, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Asserts if file contains expected string |
+| assertNotContains | string $expected, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Asserts if file doesn't contain expected string |
+| assertSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Assert if file is of expected size |
+| assertNotSize | int $count, string $message="" | [Lucinda\UnitTest\Result](https://github.com/aherne/unit-testing/blob/v2.0/src/Result.php) | Assert if file is not of expected size |
 
 Assertion example:
 
