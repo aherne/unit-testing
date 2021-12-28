@@ -2,26 +2,21 @@
 namespace Lucinda\UnitTest\Validator;
 
 use Lucinda\UnitTest\Result;
-use Lucinda\UnitTest\Exception;
 
 /**
  * Series of tests useful to validate object values
  */
 class Objects
 {
-    private $value;
+    private object $value;
     
     /**
      * Constructs an object
      *
      * @param object $value
-     * @throws Exception
      */
-    public function __construct($value)
+    public function __construct(object $value)
     {
-        if (!is_object($value)) {
-            throw new Exception("Value is not an object!");
-        }
         $this->value = $value;
     }
     

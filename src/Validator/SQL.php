@@ -11,10 +11,10 @@ use Lucinda\UnitTest\Validator\SQL\DataSource;
  */
 class SQL
 {
-    private static $dataSource;
-    private static $instance;
+    private static DataSource $dataSource;
+    private static SQL $instance;
     
-    private $PDO;
+    private \PDO $PDO;
     
     /**
      * Sets data source to be used by SQL instances later on

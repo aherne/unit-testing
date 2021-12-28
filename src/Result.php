@@ -6,8 +6,8 @@ namespace Lucinda\UnitTest;
  */
 class Result
 {
-    private $status;
-    private $message;
+    private bool $status;
+    private string $message;
 
     /**
      * UnitTestResult constructor.

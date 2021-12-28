@@ -6,9 +6,9 @@ namespace Lucinda\UnitTest\Creator;
  */
 class TestClass
 {
-    private $testClassName;
-    private $testNamespace;
-    private $testFileLocation;
+    private string $testClassName;
+    private string $testNamespace;
+    private string $testFileLocation;
     
     /**
      * Sets up class information

@@ -8,7 +8,7 @@ use Lucinda\UnitTest\Result;
  */
 class Integers
 {
-    private $value;
+    private int $value;
     
     /**
      * Constructs a integer

@@ -8,7 +8,7 @@ use Lucinda\UnitTest\Exception;
  */
 class ClassesFinder
 {
-    private $results = [];
+    private array $results = [];
     
     /**
      * Finds classes in folder
@@ -20,7 +20,7 @@ class ClassesFinder
     {
         $this->setResults($directory);
         foreach ($this->results as $classInfo) {
-            if (!$classInfo->isAbstract && !$classInfo->isInterface) {
+            if (!$classInfo->isAbstract && !$classInfo->isInterface && !$classInfo->isEnum) {
                 $classInfo->methods = $this->getInheritedMethods($classInfo);
             }
         }
@@ -32,7 +32,7 @@ class ClassesFinder
      * @param string $directory Folder to look for files into.
      * @throws Exception If directory not found
      */
-    private function setResults(string $directory)
+    private function setResults(string $directory): void
     {
         if (!is_dir($directory)) {
             throw new Exception("Folder not found: ".$directory);
@@ -128,10 +128,11 @@ class ClassesFinder
         }
         
         $m2 = array();
-        preg_match("/(\n[\s|\t]*(final)?\s*(abstract)?\s*(class|interface)\s*([a-zA-Z0-9_]+))\s*(extends\s+([a-zA-Z0-9_\\\]+))?\s*(implements\s+([a-zA-Z0-9_\\\,\s]+))?/", $content, $m2);
+        preg_match("/(\n[\s|\t]*(final)?\s*(abstract)?\s*(class|interface|enum)\s*([a-zA-Z0-9_]+))\s*(extends\s+([a-zA-Z0-9_\\\]+))?\s*(implements\s+([a-zA-Z0-9_\\\,\s]+))?/", $content, $m2);
         $classInfo->isFinal = ($m2[2]?true:false);
         $classInfo->isAbstract = ($m2[3]?true:false);
         $classInfo->isInterface = $m2[4]=="interface";
+        $classInfo->isEnum = $m2[4]=="enum";
         $classInfo->className = $m2[5];
         $classInfo->extends = (!empty($m2[7])?$this->getFullClassName($m2[7], $correspondences, $classInfo->namespace):"");
         if (!empty($m2[9])) {

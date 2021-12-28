@@ -5,7 +5,7 @@ use Lucinda\UnitTest\Result;
 
 class Files
 {
-    private $path;
+    private string $path;
     
     /**
      * Constructs a integer

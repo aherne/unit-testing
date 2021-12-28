@@ -1,6 +1,7 @@
 <?php
 namespace Lucinda\UnitTest\Validator;
 
+use Lucinda\UnitTest\Result;
 use Lucinda\UnitTest\Validator\URL\Request;
 use Lucinda\UnitTest\Validator\URL\ResultValidator;
 use Lucinda\UnitTest\Validator\URL\DataSource;
@@ -10,7 +11,7 @@ use Lucinda\UnitTest\Validator\URL\DataSource;
  */
 class URL
 {
-    private $response;
+    private DataSource $response;
 
     /**
      * Generates a request to an URL based on criteria.
@@ -29,7 +30,7 @@ class URL
      * @param ResultValidator $validator
      * @return \Lucinda\UnitTest\Result
      */
-    public function assert(ResultValidator $validator)
+    public function assert(ResultValidator $validator): Result
     {
         return $validator->validate($this->response);
     }

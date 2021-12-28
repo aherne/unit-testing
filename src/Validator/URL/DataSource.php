@@ -8,10 +8,10 @@ use Lucinda\UnitTest\Exception;
  */
 class DataSource
 {
-    private $url;
-    private $requestMethod = "GET";
-    private $requestParameters = [];
-    private $requestHeaders = [];
+    private string $url;
+    private string $requestMethod = "GET";
+    private array $requestParameters = [];
+    private array $requestHeaders = [];
     
     /**
      * Sets url to connect to

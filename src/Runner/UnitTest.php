@@ -8,16 +8,7 @@ use Lucinda\UnitTest\Result;
  */
 class UnitTest
 {
-    /**
-     * @var string
-     */
-    public $className="";
-    /**
-     * @var string
-     */
-    public $methodName="";
-    /**
-     * @var Result
-     */
-    public $result;
+    public string $className="";
+    public string $methodName="";
+    public ?Result $result = null;
 }

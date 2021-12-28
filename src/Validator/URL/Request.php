@@ -8,7 +8,7 @@ use Lucinda\UnitTest\Exception;
  */
 class Request
 {
-    private $response;
+    private Response $response;
 
     /**
      * Generates a request to an URL based on criteria.

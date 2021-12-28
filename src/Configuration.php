@@ -9,10 +9,10 @@ use Lucinda\UnitTest\Configuration\UnitTestedAPI;
  */
 class Configuration
 {
-    private $simpleXMLElement;
+    private \SimpleXMLElement $simpleXMLElement;
     
-    private $sqlDataSource;
-    private $apis = [];
+    private ?DataSource $sqlDataSource = null;
+    private array $apis = [];
     
     /**
      * Reads unit tests configuration based on XML file and development environment

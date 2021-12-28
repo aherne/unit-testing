@@ -8,7 +8,7 @@ use Lucinda\UnitTest\Result;
  */
 class Floats
 {
-    private $value;
+    private float $value;
     
     /**
      * Constructs a float

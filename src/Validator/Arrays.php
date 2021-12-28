@@ -8,7 +8,7 @@ use Lucinda\UnitTest\Result;
  */
 class Arrays
 {
-    private $value;
+    private array $value;
     
     /**
      * Constructs an array

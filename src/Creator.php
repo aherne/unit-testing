@@ -10,8 +10,8 @@ use Lucinda\UnitTest\Creator\TestClass;
  */
 class Creator
 {
-    private $sourcesFolder;
-    private $testsFolder;
+    private string $sourcesFolder = "";
+    private string $testsFolder = "";
     
     /**
      * UnitTest creator constructor.
@@ -41,7 +41,7 @@ class Creator
     private function execute(array $sourceFiles, array $testFiles): void
     {
         foreach ($sourceFiles as $infoSrc) {
-            if ($infoSrc->isAbstract || $infoSrc->isInterface) {
+            if ($infoSrc->isAbstract || $infoSrc->isInterface || $infoSrc->isEnum) {
                 continue;
             }
             $srcClassName = $infoSrc->className;

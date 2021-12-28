@@ -8,7 +8,7 @@ use Lucinda\UnitTest\Result;
  */
 class Strings
 {
-    private $value;
+    private string $value;
     
     /**
      * Constructs a string

@@ -6,14 +6,14 @@ namespace Lucinda\UnitTest\Validator\SQL;
  */
 class DataSource
 {
-    private $driverName;
-    private $driverOptions;
-    private $host;
-    private $port;
-    private $userName;
-    private $password;
-    private $schema;
-    private $charset;
+    private string $driverName;
+    private array $driverOptions = [];
+    private string $host = "127.0.0.1";
+    private int $port;
+    private string $userName;
+    private string $password;
+    private string $schema;
+    private string $charset;
     
     /**
      * Sets database server driver name.

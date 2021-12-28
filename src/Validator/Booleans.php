@@ -8,7 +8,7 @@ use Lucinda\UnitTest\Result;
  */
 class Booleans
 {
-    private $value;
+    private bool $value;
     
     /**
      * Constructs a boolean

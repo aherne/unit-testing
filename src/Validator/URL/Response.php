@@ -6,9 +6,9 @@ namespace Lucinda\UnitTest\Validator\URL;
  */
 class Response
 {
-    private $statusCode;
-    private $body;
-    private $headers=[];
+    private int $statusCode;
+    private string $body;
+    private array $headers=[];
 
     /**
      * Calls internal setters about cURL results

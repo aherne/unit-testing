@@ -6,45 +6,14 @@ namespace Lucinda\UnitTest\Runner;
  */
 class ClassInfo
 {
-    /**
-     * @var string
-     */
-    public $namespace;
-    /**
-     * @var string
-     */
-    public $className;
-    /**
-     * @var string[]
-     */
-    public $methods=[];
-    /**
-     * @var string
-     */
-    public $filePath;
-    
-    /**
-     * @var boolean
-     */
-    public $isFinal = false;
-    
-    /**
-     * @var boolean
-     */
-    public $isAbstract = false;
-    
-    /**
-     * @var boolean
-     */
-    public $isInterface = false;
-    
-    /**
-     * @var string
-     */
-    public $extends;
-    
-    /**
-     * @var string[]
-     */
-    public $implements = [];
+    public string $namespace;
+    public string $className;
+    public array $methods=[];
+    public string $filePath;
+    public bool $isFinal = false;
+    public bool $isAbstract = false;
+    public bool $isInterface = false;
+    public bool $isEnum = false;
+    public string $extends = "";
+    public array $implements = [];
 }

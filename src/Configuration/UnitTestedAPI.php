@@ -11,10 +11,10 @@ class UnitTestedAPI
     const DEFAULT_SOURCES_PATH = "src";
     const DEFAULT_TESTS_PATH = "tests";
     
-    private $sources_path;
-    private $sources_namespace;
-    private $tests_path;
-    private $tests_namespace;
+    private string $sources_path;
+    private string $sources_namespace;
+    private string $tests_path;
+    private string $tests_namespace;
     
     /**
      * Performs detection process

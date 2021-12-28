@@ -11,7 +11,7 @@ use Lucinda\UnitTest\Validator\SQL;
  */
 class Runner
 {
-    private $results = [];
+    private array $results = [];
     
     /**
      * UnitTest runner constructor.
@@ -42,7 +42,7 @@ class Runner
     private function setResults(array $sourceFiles, array $testFiles): void
     {
         foreach ($sourceFiles as $infoSrc) {
-            if ($infoSrc->isAbstract || $infoSrc->isInterface) {
+            if ($infoSrc->isAbstract || $infoSrc->isInterface || $infoSrc->isEnum) {
                 continue;
             }
             $srcClassName = $infoSrc->className;
@@ -92,7 +92,7 @@ class Runner
      * @param string $testClassNameWithNamespace
      * @param string $method
      */
-    private function parseResults($result, string $testClassNameWithNamespace, string $method): void
+    private function parseResults(mixed $result, string $testClassNameWithNamespace, string $method): void
     {
         if (is_array($result) && !empty($result)) {
             foreach ($result as $r) {
