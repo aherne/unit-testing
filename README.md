@@ -31,7 +31,7 @@ API is fully PSR-4 compliant, only requiring PHP8.1+ interpreter, SimpleXML + cU
 
 - **[installation](#installation)**: describes how to install API on your computer, in light of steps above
 - **[assertions](#assertions)**: describes how to make assertions using this API
-- **[examples](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests)**: shows real life unit tests for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
+- **[examples](https://github.com/aherne/oauth2client/tree/master#unit-tests)**: shows real life unit tests for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/master)
 
 ### Why Not PHPUnit
 
@@ -82,7 +82,7 @@ Optional tag **servers** stores connection settings for SQL servers that are goi
 - *SCHEMA*: (optional) name of schema unit tests will run on. Example: *test_schema*
 - *CHARSET*: (optional) default character set to use in connection. Example: *utf8*
 
-Example: [unit tests](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml) @ [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)
+Example: [unit tests](https://github.com/aherne/oauth2client/blob/master/unit-tests.xml) @ [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/master)
 
 ## Implementation
 
@@ -173,7 +173,7 @@ try {
 }
 ```
 
-To see a live example of usage, check [unit tests](https://github.com/aherne/oauth2client/tree/v3.0.0#unit-tests) for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0)!
+To see a live example of usage, check [unit tests](https://github.com/aherne/oauth2client/tree/master#unit-tests) for [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/master)!
 
 ## Assertions
 
@@ -270,9 +270,9 @@ return $test->assertExists();
 
 ## Examples
 
-This [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/v3.0.0) is among others that use this API for unit testing, so check:
+This [OAuth2 Client API](https://github.com/aherne/oauth2client/tree/master) is among others that use this API for unit testing, so check:
 
-- [unit-tests.xml](https://github.com/aherne/oauth2client/blob/v3.0.0/unit-tests.xml): for an example of configuration
-- [test.php](https://github.com/aherne/oauth2client/blob/v3.0.0/test.php): for an example of test suite executor
-- [tests](https://github.com/aherne/oauth2client/tree/v3.0.0/tests): for examples of unit tests of classes from [src](https://github.com/aherne/oauth2client/tree/v3.0.0/src)
-- [tests_drivers](https://github.com/aherne/oauth2client/tree/v3.0.0/tests): for examples of unit tests of classes from [drivers](https://github.com/aherne/oauth2client/tree/v3.0.0/drivers)
+- [unit-tests.xml](https://github.com/aherne/oauth2client/blob/master/unit-tests.xml): for an example of configuration
+- [test.php](https://github.com/aherne/oauth2client/blob/master/test.php): for an example of test suite executor
+- [tests](https://github.com/aherne/oauth2client/tree/master/tests): for examples of unit tests of classes from [src](https://github.com/aherne/oauth2client/tree/master/src)
+- [tests_drivers](https://github.com/aherne/oauth2client/tree/master/tests): for examples of unit tests of classes from [drivers](https://github.com/aherne/oauth2client/tree/master/drivers)
