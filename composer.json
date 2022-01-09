@@ -1,7 +1,7 @@
 {
   "name": "lucinda/unit-testing",
   "type": "library",
-  "description": "Lightweight PHP7.1 library for unit testing with zero dependencies",
+  "description": "Lightweight PHP7.1+ library for unit testing with zero dependencies",
   "keywords": ["unit testing"],
   "homepage": "https://github.com/aherne/unit-testing",
   "license": "MIT",
