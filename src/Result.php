@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest;
 
 /**
@@ -11,8 +12,9 @@ class Result
 
     /**
      * UnitTestResult constructor.
-     * @param boolean $status Validation status: normally a boolean (whether or not it has passed)
-     * @param string $payload Validation message: normally failure payload that goes along with not passing status
+     *
+     * @param boolean $status  Validation status: normally a boolean (whether or not it has passed)
+     * @param string  $message Validation message: normally failure payload that goes along with not passing status
      */
     public function __construct(bool $status, string $message="")
     {

@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Configuration;
 
 use Lucinda\UnitTest\Exception;
@@ -8,18 +9,18 @@ use Lucinda\UnitTest\Exception;
  */
 class UnitTestedAPI
 {
-    const DEFAULT_SOURCES_PATH = "src";
-    const DEFAULT_TESTS_PATH = "tests";
-    
-    private string $sources_path;
-    private string $sources_namespace;
-    private string $tests_path;
-    private string $tests_namespace;
-    
+    public const DEFAULT_SOURCES_PATH = "src";
+    public const DEFAULT_TESTS_PATH = "tests";
+
+    private string $sourcesPath;
+    private string $sourcesNamespace;
+    private string $testsPath;
+    private string $testsNamespace;
+
     /**
      * Performs detection process
      *
-     * @param \SimpleXMLElement $unitTest
+     * @param  \SimpleXMLElement $unitTest
      * @throws Exception
      */
     public function __construct(\SimpleXMLElement $unitTest)
@@ -29,11 +30,13 @@ class UnitTestedAPI
         $this->setTestsNamespace($unitTest);
         $this->setTestsPath($unitTest);
     }
-    
+
     /**
      * Detects source files base namespace based on attribute 'namespace' of 'sources' tag
      *
      * @param \SimpleXMLElement $unitTest
+     *
+     * @return void
      * @throws Exception
      */
     private function setSourcesNamespace(\SimpleXMLElement $unitTest): void
@@ -42,13 +45,15 @@ class UnitTestedAPI
         if (!$sourcesNamespace) {
             throw new Exception("Attribute 'namespace' not defined or empty for 'sources' tag!");
         }
-        $this->sources_namespace = $sourcesNamespace;
+        $this->sourcesNamespace = $sourcesNamespace;
     }
-    
+
     /**
      * Gets paths to source files based on attribute 'path' of 'sources' tag
      *
      * @param \SimpleXMLElement $unitTest
+     *
+     * @return void
      * @throws Exception
      */
     private function setSourcesPath(\SimpleXMLElement $unitTest): void
@@ -60,13 +65,15 @@ class UnitTestedAPI
         if (!file_exists($sourcesPath)) {
             throw new Exception("Folder not found on disk: ".$sourcesPath);
         }
-        $this->sources_path = $sourcesPath;
+        $this->sourcesPath = $sourcesPath;
     }
-    
+
     /**
      * Detects test files base namespace based on attribute 'namespace' of 'tests' tag
      *
      * @param \SimpleXMLElement $unitTest
+     *
+     * @return void
      * @throws Exception
      */
     private function setTestsNamespace(\SimpleXMLElement $unitTest): void
@@ -75,14 +82,15 @@ class UnitTestedAPI
         if (!$testsNamespace) {
             throw new Exception("Attribute 'namespace' not defined or empty for 'tests' tag!");
         }
-        $this->tests_namespace = $testsNamespace;
+        $this->testsNamespace = $testsNamespace;
     }
-    
+
     /**
      * Gets paths to test files based on attribute 'path' of 'tests' tag
      *
      * @param \SimpleXMLElement $unitTest
-     * @throws Exception
+     *
+     * @return void
      */
     private function setTestsPath(\SimpleXMLElement $unitTest): void
     {
@@ -93,9 +101,9 @@ class UnitTestedAPI
         if (!file_exists($testsPath)) {
             mkdir($testsPath, 0777);
         }
-        $this->tests_path = $testsPath;
+        $this->testsPath = $testsPath;
     }
-    
+
     /**
      * Gets base path to API sources folder.
      *
@@ -103,9 +111,9 @@ class UnitTestedAPI
      */
     public function getSourcesPath(): string
     {
-        return $this->sources_path;
+        return $this->sourcesPath;
     }
-    
+
     /**
      * Gets base namespace of API source classes
      *
@@ -113,9 +121,9 @@ class UnitTestedAPI
      */
     public function getSourcesNamespace(): string
     {
-        return $this->sources_namespace;
+        return $this->sourcesNamespace;
     }
-    
+
     /**
      * Gets base path to API tests folder.
      *
@@ -123,9 +131,9 @@ class UnitTestedAPI
      */
     public function getTestsPath(): string
     {
-        return $this->tests_path;
+        return $this->testsPath;
     }
-    
+
     /**
      * Gets base namespace of API test classes
      *
@@ -133,6 +141,6 @@ class UnitTestedAPI
      */
     public function getTestsNamespace(): string
     {
-        return $this->tests_namespace;
+        return $this->testsNamespace;
     }
 }

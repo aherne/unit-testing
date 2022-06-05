@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Validator\URL;
 
 use Lucinda\UnitTest\Exception;
@@ -10,9 +11,15 @@ class DataSource
 {
     private string $url;
     private string $requestMethod = "GET";
+    /**
+     * @var array<string,mixed>
+     */
     private array $requestParameters = [];
+    /**
+     * @var string[]
+     */
     private array $requestHeaders = [];
-    
+
     /**
      * Sets url to connect to
      *
@@ -22,7 +29,7 @@ class DataSource
     {
         $this->url = $url;
     }
-    
+
     /**
      * Gets url to connect to
      *
@@ -32,11 +39,11 @@ class DataSource
     {
         return $this->url;
     }
-    
+
     /**
      * Sets HTTP request method to use in connection
      *
-     * @param string $requestMethod
+     * @param  string $requestMethod
      * @throws Exception
      */
     public function setRequestMethod(string $requestMethod): void
@@ -46,7 +53,7 @@ class DataSource
         }
         $this->requestMethod = $requestMethod;
     }
-    
+
     /**
      * Gets HTTP request method to use in connection
      *
@@ -56,28 +63,28 @@ class DataSource
     {
         return $this->requestMethod;
     }
-    
+
     /**
      * Adds a request parameter by name and value
      *
-     * @param mixed $name
-     * @param mixed $value
+     * @param string $name
+     * @param mixed  $value
      */
-    public function addRequestParameter($name, $value): void
+    public function addRequestParameter(string $name, mixed $value): void
     {
         $this->requestParameters[$name] = $value;
     }
-    
+
     /**
      * Gets all request parameters added
      *
-     * @return array
+     * @return array<string,mixed>
      */
     public function getRequestParameters(): array
     {
         return $this->requestParameters;
     }
-    
+
     /**
      * Adds a request header by name and value
      *
@@ -88,11 +95,11 @@ class DataSource
     {
         $this->requestHeaders[] = $name.": ".$value;
     }
-    
+
     /**
      * Gets all request headers added
      *
-     * @return array
+     * @return array<string,string>
      */
     public function getRequestHeaders(): array
     {

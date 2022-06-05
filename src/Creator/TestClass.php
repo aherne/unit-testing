@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Creator;
 
 /**
@@ -9,7 +10,7 @@ class TestClass
     private string $testClassName;
     private string $testNamespace;
     private string $testFileLocation;
-    
+
     /**
      * Sets up class information
      *
@@ -23,7 +24,7 @@ class TestClass
         $this->testNamespace = $testNamespace;
         $this->testFileLocation = $testFileLocation;
     }
-    
+
     /**
      * Create an unit test class
      *
@@ -32,7 +33,7 @@ class TestClass
     public function create(array $methods): void
     {
         $source = '<?php
-'.($this->testNamespace?'namespace '.$this->testNamespace.';':'').'
+'.($this->testNamespace ? 'namespace '.$this->testNamespace.';' : '').'
     
 class '.$this->testClassName.'
 {
@@ -54,7 +55,7 @@ class '.$this->testClassName.'
         }
         file_put_contents($this->testFileLocation, $source);
     }
-    
+
     /**
      * Appends new methods to existing unit test class
      *

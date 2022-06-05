@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Validator;
 
 use Lucinda\UnitTest\Result;
@@ -9,7 +10,7 @@ use Lucinda\UnitTest\Result;
 class Floats
 {
     private float $value;
-    
+
     /**
      * Constructs a float
      *
@@ -19,72 +20,72 @@ class Floats
     {
         $this->value = $value;
     }
-    
+
     /**
      * Asserts if float equals one expected
      *
-     * @param float $expected
-     * @param string $message
+     * @param  float  $expected
+     * @param  string $message
      * @return Result
      */
     public function assertEquals(float $expected, string $message=""): Result
     {
         return new Result($expected==$this->value, $message);
     }
-    
+
     /**
      * Asserts if float is different from one expected
      *
-     * @param float $expected
-     * @param string $message
+     * @param  float  $expected
+     * @param  string $message
      * @return Result
      */
     public function assertNotEquals(float $expected, string $message=""): Result
     {
         return new Result($expected!=$this->value, $message);
     }
-    
+
     /**
      * Asserts if float is greater than one expected
      *
-     * @param float $expected
-     * @param string $message
+     * @param  float  $expected
+     * @param  string $message
      * @return Result
      */
     public function assertGreater(float $expected, string $message=""): Result
     {
         return new Result($expected>$this->value, $message);
     }
-    
+
     /**
      * Asserts if float is greater or equals one expected
      *
-     * @param float $expected
-     * @param string $message
+     * @param  float  $expected
+     * @param  string $message
      * @return Result
      */
     public function assertGreaterEquals(float $expected, string $message=""): Result
     {
         return new Result($expected>=$this->value, $message);
     }
-    
+
     /**
      * Asserts if float is smaller than one expected
      *
-     * @param float $expected
-     * @param string $message
+     * @param  float  $expected
+     * @param  string $message
      * @return Result
      */
     public function assertSmaller(float $expected, string $message=""): Result
     {
         return new Result($expected<$this->value, $message);
     }
-    
+
     /**
      * Asserts if float is smaller or equals one expected
      *
-     * @param float $expected
-     * @param string $message
+     * @param  float  $expected
+     * @param  string $message
      * @return Result
      */
     public function assertSmallerEquals(float $expected, string $message=""): Result

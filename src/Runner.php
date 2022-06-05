@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest;
 
 use Lucinda\UnitTest\Runner\ClassInfo;
@@ -11,12 +12,15 @@ use Lucinda\UnitTest\Validator\SQL;
  */
 class Runner
 {
+    /**
+     * @var UnitTest[]
+     */
     private array $results = [];
-    
+
     /**
      * UnitTest runner constructor.
      *
-     * @param Configuration $configuration
+     * @param  Configuration $configuration
      * @throws Exception
      */
     public function __construct(Configuration $configuration)
@@ -31,13 +35,12 @@ class Runner
             $this->setResults($sourcesFinder->getResults(), $testsFinder->getResults());
         }
     }
-    
+
     /**
      * Matches sources to tests, executes latter and collects results
      *
-     * @param ClassInfo[string] $sourceFiles List of source classes/files found along with adjacent info.
-     * @param ClassInfo[string] $testFiles List of test classes/files found along with adjacent info.
-     * @throws Exception
+     * @param array<string,ClassInfo> $sourceFiles List of source classes/files found along with adjacent info.
+     * @param array<string,ClassInfo> $testFiles   List of test classes/files found along with adjacent info.
      */
     private function setResults(array $sourceFiles, array $testFiles): void
     {
@@ -48,87 +51,120 @@ class Runner
             $srcClassName = $infoSrc->className;
             $testClassName = $srcClassName."Test";
             $srcNamespace = $infoSrc->namespace;
-            $testNamespace = ($srcNamespace?"Test\\".$srcNamespace:"");
-            $testClassNameWithNamespace = ($testNamespace?$testNamespace."\\":"").$testClassName;
+            $testNamespace = ($srcNamespace ? "Test\\".$srcNamespace : "");
+            $testClassNameNamespaced = ($testNamespace ? $testNamespace."\\" : "").$testClassName;
             // check if class is covered
-            if (!isset($testFiles[$testClassNameWithNamespace])) {
-                $unitTest = new UnitTest();
-                $unitTest->className = $testClassNameWithNamespace;
-                $unitTest->result = new Result(false, "Class not covered by unit tests");
-                $this->results[] = $unitTest;
-            } elseif ($testNamespace!=$testFiles[$testClassNameWithNamespace]->namespace) {
-                $unitTest = new UnitTest();
-                $unitTest->className = $testClassNameWithNamespace;
-                $unitTest->result = new Result(false, "Unit test namespace doesn't match namespace of class");
-                $this->results[] = $unitTest;
+            if (!isset($testFiles[$testClassNameNamespaced])) {
+                $this->results[] = $this->getFailedUnitTest(
+                    $testClassNameNamespaced,
+                    "Class not covered by unit tests"
+                );
+            } elseif ($testNamespace!=$testFiles[$testClassNameNamespaced]->namespace) {
+                $this->results[] = $this->getFailedUnitTest(
+                    $testClassNameNamespaced,
+                    "Unit test namespace doesn't match namespace of class"
+                );
             } else {
-                $testObject = new $testClassNameWithNamespace();
-                foreach ($infoSrc->methods as $method) {
-                    if (!isset($testFiles[$testClassNameWithNamespace]->methods[$method])) {
-                        $unitTest = new UnitTest();
-                        $unitTest->className = $testClassNameWithNamespace;
-                        $unitTest->methodName = $method;
-                        $unitTest->result = new Result(false, "Method not covered by unit tests");
-                        $this->results[] = $unitTest;
-                    } else {
-                        $result = $testObject->{$method}();
-                        $this->parseResults($result, $testClassNameWithNamespace, $method);
-                    }
-                }
-                foreach ($testFiles[$testClassNameWithNamespace]->methods as $method) {
-                    if (!isset($infoSrc->methods[$method])) {
-                        $result = $testObject->{$method}();
-                        $this->parseResults($result, $testClassNameWithNamespace, $method);
-                    }
-                }
+                $this->runAllClassMethods($testClassNameNamespaced, $infoSrc->methods, $testFiles);
             }
         }
     }
-    
+
+    /**
+     * Instance unit test class and execute all public methods
+     *
+     * @param  string                  $testClassNameNamespaced
+     * @param  array<string,string>    $methods
+     * @param  array<string,ClassInfo> $testFiles
+     * @return void
+     */
+    private function runAllClassMethods(
+        string $testClassNameNamespaced,
+        array $methods,
+        array $testFiles
+    ): void {
+        $testObject = new $testClassNameNamespaced();
+        foreach ($methods as $method) {
+            if (!isset($testFiles[$testClassNameNamespaced]->methods[$method])) {
+                $this->results[] = $this->getFailedUnitTest(
+                    $testClassNameNamespaced,
+                    "Unit test namespace doesn't match namespace of class",
+                    $method
+                );
+            } else {
+                $result = $testObject->{$method}();
+                $this->parseResults($result, $testClassNameNamespaced, $method);
+            }
+        }
+        foreach ($testFiles[$testClassNameNamespaced]->methods as $method) {
+            if (!isset($methods[$method])) {
+                $result = $testObject->{$method}();
+                $this->parseResults($result, $testClassNameNamespaced, $method);
+            }
+        }
+    }
+
     /**
      * Parses method execution results of unit tests
      *
-     * @param mixed $result
-     * @param string $testClassNameWithNamespace
+     * @param mixed  $result
+     * @param string $testClassNameNamespaced
      * @param string $method
      */
-    private function parseResults(mixed $result, string $testClassNameWithNamespace, string $method): void
+    private function parseResults(mixed $result, string $testClassNameNamespaced, string $method): void
     {
         if (is_array($result) && !empty($result)) {
-            foreach ($result as $r) {
-                if ($r instanceof Result) {
+            foreach ($result as $object) {
+                if ($object instanceof Result) {
                     $unitTest = new UnitTest();
-                    $unitTest->className = $testClassNameWithNamespace;
+                    $unitTest->className = $testClassNameNamespaced;
                     $unitTest->methodName = $method;
-                    $unitTest->result = $r;
+                    $unitTest->result = $object;
                     $this->results[] = $unitTest;
                 } else {
-                    $unitTest = new UnitTest();
-                    $unitTest->className = $testClassNameWithNamespace;
-                    $unitTest->methodName = $method;
-                    $unitTest->result = new Result(false, "Invalid unit test response");
-                    $this->results[] = $unitTest;
+                    $this->results[] = $this->getFailedUnitTest(
+                        $testClassNameNamespaced,
+                        "Invalid unit test response",
+                        $method
+                    );
                 }
             }
         } elseif ($result instanceof Result) {
             $unitTest = new UnitTest();
-            $unitTest->className = $testClassNameWithNamespace;
+            $unitTest->className = $testClassNameNamespaced;
             $unitTest->methodName = $method;
             $unitTest->result = $result;
             $this->results[] = $unitTest;
         } else {
-            $unitTest = new UnitTest();
-            $unitTest->className = $testClassNameWithNamespace;
-            $unitTest->methodName = $method;
-            $unitTest->result = new Result(false, "Invalid unit test response");
-            $this->results[] = $unitTest;
+            $this->results[] = $this->getFailedUnitTest(
+                $testClassNameNamespaced,
+                "Invalid unit test response",
+                $method
+            );
         }
     }
-    
+
+    /**
+     * @param  string $testClassNameNamespaced
+     * @param  string $message
+     * @param  string $method
+     * @return UnitTest
+     */
+    private function getFailedUnitTest(string $testClassNameNamespaced, string $message, string $method = ""): UnitTest
+    {
+        $unitTest = new UnitTest();
+        $unitTest->className = $testClassNameNamespaced;
+        if ($method) {
+            $unitTest->methodName = $method;
+        }
+        $unitTest->result = new Result(false, $message);
+        return $unitTest;
+    }
+
     /**
      * Gets results of unit tests
      *
-     * @return Result[]
+     * @return UnitTest[]
      */
     public function getResults(): array
     {

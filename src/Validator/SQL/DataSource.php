@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Validator\SQL;
 
 /**
@@ -7,6 +8,9 @@ namespace Lucinda\UnitTest\Validator\SQL;
 class DataSource
 {
     private string $driverName;
+    /**
+     * @var array<int,int>
+     */
     private array $driverOptions = [];
     private string $host = "127.0.0.1";
     private int $port;
@@ -14,7 +18,7 @@ class DataSource
     private string $password;
     private string $schema;
     private string $charset;
-    
+
     /**
      * Sets database server driver name.
      *
@@ -36,7 +40,7 @@ class DataSource
     /**
      * Sets database server vendor PDO connection options
      *
-     * @param array $driverOptions
+     * @param array<int,int> $driverOptions
      */
     public function setDriverOptions(array $driverOptions): void
     {
@@ -45,7 +49,7 @@ class DataSource
     /**
      * Gets database server vendor PDO connection options
      *
-     * @return array
+     * @return array<int,int>
      */
     public function getDriverOptions(): array
     {

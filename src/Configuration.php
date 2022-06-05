@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest;
 
 use Lucinda\UnitTest\Validator\SQL\DataSource;
@@ -10,15 +11,17 @@ use Lucinda\UnitTest\Configuration\UnitTestedAPI;
 class Configuration
 {
     private \SimpleXMLElement $simpleXMLElement;
-    
     private ?DataSource $sqlDataSource = null;
+    /**
+     * @var UnitTestedAPI[]
+     */
     private array $apis = [];
-    
+
     /**
      * Reads unit tests configuration based on XML file and development environment
      *
-     * @param string $xmlFilePath
-     * @param string $developmentEnvironment
+     * @param  string $xmlFilePath
+     * @param  string $developmentEnvironment
      * @throws Exception
      */
     public function __construct(string $xmlFilePath, string $developmentEnvironment)
@@ -27,11 +30,11 @@ class Configuration
             throw new Exception("XML file not found: ".$xmlFilePath);
         }
         $this->simpleXMLElement = simplexml_load_file($xmlFilePath);
-        
+
         $this->setAPIs();
         $this->setSQLDataSource($developmentEnvironment);
     }
-    
+
     /**
      * Detects API under testing by contents of 'unit_tests' tag
      *
@@ -43,12 +46,12 @@ class Configuration
         if (empty($tmp["unit_test"])) {
             throw new Exception("Tag empty or not defined in configuration XML: unit_tests");
         }
-        $list = (is_array($tmp["unit_test"])?$tmp["unit_test"]:[$tmp["unit_test"]]);
+        $list = (is_array($tmp["unit_test"]) ? $tmp["unit_test"] : [$tmp["unit_test"]]);
         foreach ($list as $unitTest) {
             $this->apis[] = new UnitTestedAPI($unitTest);
         }
     }
-    
+
     /**
      * Gets APIs under testing
      *
@@ -58,12 +61,11 @@ class Configuration
     {
         return $this->apis;
     }
-    
+
     /**
      * Detects SQL data source based contents of 'sql' tag and development environment
      *
      * @param string $developmentEnvironment
-     * @throws Exception
      */
     private function setSQLDataSource(string $developmentEnvironment): void
     {
@@ -74,23 +76,23 @@ class Configuration
         if (empty($xml)) {
             return;
         }
-            
+
         $dataSource = new DataSource();
         $dataSource->setDriverName((string) $xml["driver"]);
-        $dataSource->setDriverOptions(array()); // currently, setting driver options isn't possible
+        $dataSource->setDriverOptions([]); // currently, setting driver options isn't possible
         $dataSource->setHost((string) $xml["host"]);
-        $dataSource->setPort((integer) $xml["port"]);
+        $dataSource->setPort((int) $xml["port"]);
         $dataSource->setUserName((string) $xml["username"]);
         $dataSource->setPassword((string) $xml["password"]);
         $dataSource->setSchema((string) $xml["schema"]);
         $dataSource->setCharset((string) $xml["charset"]);
         $this->sqlDataSource = $dataSource;
     }
-    
+
     /**
      * Gets SQL data source detected
      *
-     * @return DataSource
+     * @return ?DataSource
      */
     public function getSQLDataSource(): ?DataSource
     {

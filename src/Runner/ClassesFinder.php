@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Runner;
 
 use Lucinda\UnitTest\Exception;
@@ -8,12 +9,15 @@ use Lucinda\UnitTest\Exception;
  */
 class ClassesFinder
 {
+    /**
+     * @var array<string,ClassInfo>
+     */
     private array $results = [];
-    
+
     /**
      * Finds classes in folder
      *
-     * @param string $directory
+     * @param  string $directory
      * @throws Exception If directory not found
      */
     public function __construct(string $directory)
@@ -25,11 +29,11 @@ class ClassesFinder
             }
         }
     }
-    
+
     /**
      * Finds classes in folder and appends them as ClassInfo objects to results
      *
-     * @param string $directory Folder to look for files into.
+     * @param  string $directory Folder to look for files into.
      * @throws Exception If directory not found
      */
     private function setResults(string $directory): void
@@ -46,138 +50,37 @@ class ClassesFinder
             if (is_dir($path)) {
                 $this->setResults($path);
             } elseif (strpos($file, ".php")) {
-                $info = $this->readFile($path);
+                $reader = new ClassInfoReader($path);
+                $info = $reader->getClassInfo();
                 if ($info->className) {
-                    $this->results[($info->namespace?$info->namespace."\\":"").$info->className] = $info;
+                    $this->results[($info->namespace ? $info->namespace."\\" : "").$info->className] = $info;
                 }
             }
         }
     }
-    
-    /**
-     * Gets contents of PHP file, stripping comments
-     *
-     * @param string $path
-     * @return string
-     * @see https://stackoverflow.com/questions/503871/best-way-to-automatically-remove-comments-from-php-code
-     */
-    private function getContents(string $path): string
-    {
-        $str = file_get_contents($path);
-        $commentTokens = [
-            \T_COMMENT,
-            \T_DOC_COMMENT,
-        ];
-        $tokens = token_get_all($str);
-        $lines = explode(PHP_EOL, $str);
-        $s = '';
-        foreach ($tokens as $token) {
-            if (is_array($token)) {
-                if (in_array($token[0], $commentTokens)) {
-                    $comment = $token[1];
-                    $lineNb = $token[2];
-                    $firstLine = $lines[$lineNb - 1];
-                    $p = explode(PHP_EOL, $comment);
-                    $nbLineComments = count($p);
-                    if ($nbLineComments < 1) {
-                        $nbLineComments = 1;
-                    }
-                    $firstCommentLine = array_shift($p);
-                    
-                    $isStandAlone = (trim($firstLine) === trim($firstCommentLine));
-                    
-                    if (false === $isStandAlone) {
-                        if (2 === $nbLineComments) {
-                            $s .= PHP_EOL;
-                        }
-                        continue; // just remove inline comments
-                    }
-                    
-                    // stand alone case
-                    $s .= str_repeat(PHP_EOL, $nbLineComments - 1);
-                    continue;
-                }
-                $token = $token[1];
-            }
-            $s .= $token;
-        }
-        return $s;
-    }
-    
-    /**
-     * Reads class file and detects namespace (if any), class name, public methods and file location.
-     *
-     * @param string $fileName Absolute location of class file.
-     * @return ClassInfo Class info (namespace, class name, methods, file path)
-     */
-    private function readFile(string $fileName): ClassInfo
-    {
-        $classInfo = new ClassInfo();
-        $classInfo->filePath = $fileName;
-        $content = $this->getContents($fileName);
-        
-        $m1 = array();
-        preg_match("/(\n[\s|\t]*namespace\s*([^;]+))/", $content, $m1);
-        $classInfo->namespace = (isset($m1[2])?$m1[2]:"");
-        
-        $m5 = array();
-        preg_match_all("/(\n[\s|\t]*use\s+([a-zA-Z0-9_\\\]+)\s+as\s+([a-zA-Z0-9_]+)\s*;)/", $content, $m5);
-        $correspondences = [];
-        foreach ($m5[1] as $i=>$value) {
-            $correspondences[$m5[2][$i]] = $value;
-        }
-        
-        $m2 = array();
-        preg_match("/(\n[\s|\t]*(final)?\s*(abstract)?\s*(class|interface|enum)\s*([a-zA-Z0-9_]+))\s*(extends\s+([a-zA-Z0-9_\\\]+))?\s*(implements\s+([a-zA-Z0-9_\\\,\s]+))?/", $content, $m2);
-        $classInfo->isFinal = ($m2[2]?true:false);
-        $classInfo->isAbstract = ($m2[3]?true:false);
-        $classInfo->isInterface = $m2[4]=="interface";
-        $classInfo->isEnum = $m2[4]=="enum";
-        $classInfo->className = $m2[5];
-        $classInfo->extends = (!empty($m2[7])?$this->getFullClassName($m2[7], $correspondences, $classInfo->namespace):"");
-        if (!empty($m2[9])) {
-            $matches = array();
-            preg_match_all("/([_a-zA-Z0-9\\\]+)/", $m2[9], $matches);
-            foreach ($matches[1] as $className) {
-                $classInfo->implements[] = $this->getFullClassName($className, $correspondences, $classInfo->namespace);
-            }
-        }
-        
-        $m3 = array();
-        preg_match_all("/(\n[\s|\t]*(final)?\s*(public)?\s*(static)?\s*function\s+([_a-zA-Z0-9]+))/", $content, $m3);
-        $methods = (isset($m3[5])?$m3[5]:[]);
-        foreach ($methods as $method) {
-            if (!in_array($method, ["__construct", "__destruct"])) {
-                $classInfo->methods[$method] = $method;
-            }
-        }
-        return $classInfo;
-    }
-    
-    /**
-     * Gets full class name
-     *
-     * @param string $name
-     * @param array $correspondences
-     * @param string $namespace
-     * @return string
-     */
-    private function getFullClassName(string $name, array $correspondences, string $namespace): string
-    {
-        return (isset($correspondences[$name])?$correspondences[$name]:($name[0]=="\\"?$name:($namespace?$namespace."\\".$name:$name)));
-    }
-    
+
     /**
      * Gets inherited methods for class
      *
-     * @param ClassInfo $classInfo
+     * @param  ClassInfo $classInfo
      * @return string[]
      */
     private function getInheritedMethods(ClassInfo $classInfo): array
     {
-        $methods = $classInfo->methods;
+        // collect classes inherited or interfaces implemented
+        $classes = [];
         if ($classInfo->extends) {
-            $className = $this->getNormalizedClassName($classInfo->extends);
+            $classes[] = $this->getNormalizedClassName($classInfo->extends);
+        }
+        if ($classInfo->implements) {
+            foreach ($classInfo->implements as $className) {
+                $classes[] = $this->getNormalizedClassName($className);
+            }
+        }
+
+        // gets public methods inherited classes/interfaces have
+        $methods = $classInfo->methods;
+        foreach ($classes as $className) {
             if ($className && isset($this->results[$className])) {
                 $newMethods = $this->getInheritedMethods($this->results[$className]);
                 foreach ($newMethods as $methodName) {
@@ -185,24 +88,14 @@ class ClassesFinder
                 }
             }
         }
-        if ($classInfo->implements) {
-            foreach ($classInfo->implements as $className) {
-                $className = $this->getNormalizedClassName($className);
-                if ($className && isset($this->results[$className])) {
-                    $newMethods = $this->getInheritedMethods($this->results[$className]);
-                    foreach ($newMethods as $methodName) {
-                        $methods[$methodName] = $methodName;
-                    }
-                }
-            }
-        }
+
         return $methods;
     }
-    
+
     /**
      * Gets normalized class name,
      *
-     * @param string $className
+     * @param  string $className
      * @return string
      */
     private function getNormalizedClassName(string $className): string
@@ -210,18 +103,18 @@ class ClassesFinder
         if ($className[0]=="\\") {
             $className = substr($className, 1);
         }
-        
-        if (strpos($className, "\\")===false) {
+
+        if (!str_contains($className, "\\")) {
             return ""; // global namespace class
         } else {
             return $className;
         }
     }
-    
+
     /**
      * Gets classes found
      *
-     * @return ClassInfo[string]
+     * @return array<string,ClassInfo>
      */
     public function getResults(): array
     {

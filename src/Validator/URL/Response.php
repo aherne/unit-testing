@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Validator\URL;
 
 /**
@@ -8,14 +9,17 @@ class Response
 {
     private int $statusCode;
     private string $body;
+    /**
+     * @var array<string,string>
+     */
     private array $headers=[];
 
     /**
      * Calls internal setters about cURL results
      *
-     * @param integer $httpStatusCode HTTP status code of response
-     * @param string $body Body of response
-     * @param string[string] $headers HTTP headers that came along with response
+     * @param integer              $httpStatusCode HTTP status code of response
+     * @param string               $body           Body of response
+     * @param array<string,string> $headers        HTTP headers that came along with response
      */
     public function __construct(int $httpStatusCode, string $body, array $headers)
     {
@@ -47,7 +51,7 @@ class Response
     /**
      * Sets HTTP headers that came with response.
      *
-     * @param string[string] $headers
+     * @param array<string,string> $headers
      */
     private function setHeaders(array $headers): void
     {
@@ -77,7 +81,7 @@ class Response
     /**
      * Gets HTTP headers that came along with response.
      *
-     * @return string[string]
+     * @return array<string,string>
      */
     public function getHeaders(): array
     {

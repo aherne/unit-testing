@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest;
 
 use Lucinda\UnitTest\Runner\UnitTest;

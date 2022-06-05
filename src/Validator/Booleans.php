@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Validator;
 
 use Lucinda\UnitTest\Result;
@@ -9,7 +10,7 @@ use Lucinda\UnitTest\Result;
 class Booleans
 {
     private bool $value;
-    
+
     /**
      * Constructs a boolean
      *
@@ -19,26 +20,26 @@ class Booleans
     {
         $this->value = $value;
     }
-    
+
     /**
      * Asserts if boolean is true
      *
-     * @param string $message
+     * @param  string $message
      * @return Result
      */
     public function assertTrue(string $message=""): Result
     {
-        return new Result($this->value?true:false, $message);
+        return new Result($this->value ? true : false, $message);
     }
-    
+
     /**
      * Asserts if boolean is false
      *
-     * @param string $message
+     * @param  string $message
      * @return Result
      */
     public function assertFalse(string $message=""): Result
     {
-        return new Result($this->value?false:true, $message);
+        return new Result($this->value ? false : true, $message);
     }
 }

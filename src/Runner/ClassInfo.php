@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\UnitTest\Runner;
 
 /**
@@ -8,6 +9,9 @@ class ClassInfo
 {
     public string $namespace;
     public string $className;
+    /**
+     * @var string[]
+     */
     public array $methods=[];
     public string $filePath;
     public bool $isFinal = false;
@@ -15,5 +19,8 @@ class ClassInfo
     public bool $isInterface = false;
     public bool $isEnum = false;
     public string $extends = "";
+    /**
+     * @var string[]
+     */
     public array $implements = [];
 }
